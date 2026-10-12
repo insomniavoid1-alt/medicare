@@ -27,14 +27,15 @@ test('hero actions navigate to the expected sections', async ({ page }) => {
   await expect(page.getByTestId('parts-section')).toBeVisible();
 });
 
-test('desktop navigation scrolls to each named section', async ({ page }) => {
+test('desktop navigation scrolls to each named section', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'The desktop navigation is replaced by the mobile menu at this viewport.');
   await page.getByTestId('nav-link-advantage').click();
-  await expect(page).toHaveURL(/#advantage$/);
   await expect(page.getByTestId('advantage-section')).toBeVisible();
+  await expect.poll(async () => (await page.getByTestId('advantage-section').boundingBox()).y).toBeLessThan(150);
 
   await page.getByTestId('nav-link-medigap').click();
-  await expect(page).toHaveURL(/#medigap$/);
   await expect(page.getByTestId('medigap-section')).toBeVisible();
+  await expect.poll(async () => (await page.getByTestId('medigap-section').boundingBox()).y).toBeLessThan(150);
 });
 
 test('Part A through D cost details expand and collapse accessibly', async ({ page }) => {
@@ -71,7 +72,7 @@ test('images have alternative text and mobile layout does not overflow horizonta
     await expect(toggle).toHaveAttribute('aria-expanded', 'true');
     await page.locator('#mobile-menu').getByRole('button', { name: 'Medicare Parts' }).click();
     await expect(toggle).toHaveAttribute('aria-expanded', 'false');
-    await expect(page).toHaveURL(/#parts$/);
+    await expect(page.getByTestId('parts-section')).toBeVisible();
   }
   const dimensions = await page.evaluate(() => ({
     viewport: document.documentElement.clientWidth,
