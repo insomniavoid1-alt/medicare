@@ -40,6 +40,22 @@
     .hero-broker-link:hover{text-decoration:underline}
     @media(max-width:760px){.admin-link{display:none}.marquee-track{animation-duration:26s}}
 
+
+    .hero-parts-chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+    .hero-parts-chips>span{display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid #e7e2da;border-radius:12px;background:rgba(255,255,255,.72)}
+    .hero-parts-chips b{display:grid;place-items:center;width:31px;height:31px;border-radius:9px;background:var(--green);color:white;font-family:var(--serif);font-size:18px}
+    .hero-parts-chips>span:nth-child(2) b{background:#557b60}.hero-parts-chips>span:nth-child(3) b{background:#b18a28}.hero-parts-chips>span:nth-child(4) b{background:#68798b}
+    .hero-parts-chips small{font-size:10px;line-height:1.35;color:#697269}
+    .benefit-cards{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:25px 0}
+    .benefit-card{padding:20px 18px;background:#fff;border:1px solid var(--line);border-radius:15px;box-shadow:0 4px 16px rgba(29,46,35,.035)}
+    .benefit-label{margin:0;color:#6a7169;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+    .benefit-card .feature-list{gap:11px;margin:15px 0 0}
+    .benefit-card .feature-list li{font-size:12px;line-height:1.55}
+    .warning-list{display:grid;gap:12px;margin:15px 0 0;padding:0;list-style:none}
+    .warning-list li{position:relative;padding-left:20px;color:#505c52;font-size:12px;line-height:1.55}
+    .warning-list li:before{content:"×";position:absolute;left:0;top:-1px;color:#c86d51;font-size:17px;font-weight:800}
+    @media(max-width:760px){.benefit-cards{grid-template-columns:1fr}.hero-parts-chips{gap:7px}.hero-parts-chips>span{padding:7px 9px}}
+
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}}
   </style>
 </head>
@@ -51,7 +67,7 @@
         <span><p class="brand-name">ClearPath Medicare</p><p class="brand-sub">Independent Broker</p></span>
       </a>
       <nav class="nav" aria-label="Main navigation">
-        <button data-scroll="parts">Medicare Parts</button><button data-scroll="advantage">Advantage</button><button data-scroll="medigap">Medigap</button><button data-scroll="about">About</button>
+        <button data-scroll="parts" data-testid="nav-link-parts">Medicare Parts</button><button data-scroll="advantage" data-testid="nav-link-advantage">Advantage</button><button data-scroll="medigap" data-testid="nav-link-medigap">Medigap</button><button data-scroll="about" data-testid="nav-link-about">About</button>
       </nav>
       <a class="header-phone" href="tel:+18005550199" data-testid="header-phone-link">(800) 555-0199</a>
       <a class="pill header-cta" href="#contact" data-testid="header-cta-button">Free Consultation</a><a class="admin-link" data-testid="header-admin-link" aria-label="Broker admin" href="/admin" title="Broker admin"><span aria-hidden="true">⌑</span></a>
@@ -71,7 +87,7 @@
             <h1><span>Medicare,</span><br><span>explained in</span><br><em>plain English.</em></h1>
             <p class="hero-lede" data-testid="hero-subheadline">Personal guidance on Parts A, B, C &amp; D, Medicare Advantage, and Medigap — from a licensed broker who works for you, not the insurance companies. It never costs you a penny.</p>
             <div class="hero-actions"><a class="pill" data-testid="hero-cta-button" href="#contact">Book a free consultation <span aria-hidden="true">→</span></a><a class="pill outline" data-testid="hero-explore-button" href="#parts">Explore the parts</a></div>
-            <div class="trust-row"><span><i class="check">✓</i>No fee for broker guidance</span><span><i class="check">✓</i>Licensed &amp; independent</span><span><i class="check">✓</i>CMS compliant</span></div>
+            <div class="trust-row"><span><i class="check">✓</i>No fee for broker guidance</span><span><i class="check">✓</i>Licensed &amp; independent</span><span><i class="check">✓</i>CMS compliant</span></div><div class="hero-parts-chips" aria-label="Medicare parts"><span data-testid="hero-part-chip-a"><b>A</b><small>Part A<br>Hospital</small></span><span data-testid="hero-part-chip-b"><b>B</b><small>Part B<br>Medical</small></span><span data-testid="hero-part-chip-c"><b>C</b><small>Part C<br>Advantage</small></span><span data-testid="hero-part-chip-d"><b>D</b><small>Part D<br>Drug</small></span></div>
           </div>
           <div class="hero-visual">
             <div class="hero-photo-frame" aria-hidden="true"></div>
@@ -122,8 +138,7 @@
           <h2 class="section-title">All-in-one plans from private insurers</h2>
           <p>Medicare Advantage plans replace Original Medicare with a single plan from a private, Medicare-approved company. They must cover everything Parts A and B cover — and most add prescription drugs, dental, vision, and hearing, often for a $0 additional premium.</p>
           <p>The trade-off: you generally use the plan's network of doctors and hospitals.</p>
-          <h3>Why people choose it</h3>
-          <ul class="feature-list"><li><i class="check">✓</i><span>Low or $0 additional monthly premium</span></li><li><i class="check">✓</i><span>Annual cap on out-of-pocket spending</span></li><li><i class="check">✓</i><span>Extra benefits like dental, vision, hearing, and fitness</span></li><li><i class="check">✓</i><span>Often includes prescription drug coverage</span></li></ul>
+          <div class="benefit-cards"><div class="benefit-card"><p class="benefit-label">Why people choose it</p><ul class="feature-list"><li><i class="check">✓</i><span>Low or $0 additional monthly premium</span></li><li><i class="check">✓</i><span>Annual cap on out-of-pocket spending</span></li><li><i class="check">✓</i><span>Often includes dental, vision, hearing &amp; fitness</span></li><li><i class="check">✓</i><span>Usually bundles Part D drug coverage</span></li><li><i class="check">✓</i><span>One card, one plan, one company</span></li></ul></div><div class="benefit-card"><p class="benefit-label">What to watch for</p><ul class="warning-list"><li>Provider networks (HMO/PPO) limit your doctors</li><li>Prior authorization for some services</li><li>Plans can change benefits every year</li><li>Out-of-network care can be costly or uncovered</li></ul></div></div>
           <a class="pill" href="#contact">Compare your options <span aria-hidden="true">→</span></a>
           <div class="feature-aside">Plan benefits, provider networks, premiums, and availability vary by county and plan. Check details before enrolling.</div>
         </div>
@@ -139,8 +154,7 @@
           <h2 class="section-title">Fill the gaps in Original Medicare</h2>
           <p>Medigap plans work alongside Original Medicare (Parts A and B), paying most of the deductibles and 20% coinsurance Medicare leaves behind. You keep the freedom to see any doctor in the country who accepts Medicare — no networks, no referrals.</p>
           <p>Plans are standardized by letter (A through N), so a Plan G from one company covers the same things as a Plan G from another; only the price and service differ.</p>
-          <h3>What Medigap can help with</h3>
-          <ul class="feature-list"><li><i class="check">✓</i><span>More predictable out-of-pocket costs</span></li><li><i class="check">✓</i><span>Freedom to visit any provider that accepts Medicare</span></li><li><i class="check">✓</i><span>No plan network or referrals for covered services</span></li><li><i class="check">✓</i><span>Pair with a separate Part D prescription plan</span></li></ul>
+          <div class="benefit-cards"><div class="benefit-card"><p class="benefit-label">Why people choose it</p><ul class="feature-list"><li><i class="check">✓</i><span>See any doctor in the U.S. who accepts Medicare</span></li><li><i class="check">✓</i><span>Very predictable, low out-of-pocket costs</span></li><li><i class="check">✓</i><span>No referrals or prior authorizations</span></li><li><i class="check">✓</i><span>Standardized plans (A–N); Plan G is popular</span></li><li><i class="check">✓</i><span>Guaranteed renewable for life</span></li></ul></div><div class="benefit-card"><p class="benefit-label">What to watch for</p><ul class="warning-list"><li>Higher monthly premium on top of Part B</li><li>No dental, vision or hearing extras</li><li>No drug coverage — pair with Part D</li><li>Medical underwriting may apply after your initial window</li></ul></div></div>
           <div class="plan-chips"><span>Plan G</span><span>Plan N</span><span>Plan A</span><span>Other available letters</span></div>
           <a class="pill outline" href="#contact">Explore Medigap plans <span aria-hidden="true">→</span></a>
         </div>
@@ -171,7 +185,7 @@
     <section id="contact" class="section contact-section" data-testid="contact-section">
       <div class="wrap contact-grid">
         <div class="contact-copy">
-          <p class="eyebrow">Free, no-obligation help</p><h2 class="section-title">Let's find your right plan</h2>
+          <p class="eyebrow">Free, no-obligation help</p><h2 class="section-title">Let's find your <span style="color:var(--green);font-style:italic">right plan</span></h2>
           <p>Leave your name, phone number, and email — Sarah will reach out within one business day to answer your questions and compare your options. No pressure, no cost, no obligation.</p>
           <div class="contact-reasons"><div><i class="check">✓</i>Turning 65 or retiring soon</div><div><i class="check">✓</i>Reviewing your current plan</div><div><i class="check">✓</i>Helping a parent with Medicare</div></div>
         </div>
@@ -179,9 +193,9 @@
           <h3>Request a free consultation</h3><p>Tell me a little about yourself and I'll be in touch.</p>
           <form id="lead-form" data-testid="lead-form">
             <div class="form-grid">
-              <div class="field full"><label for="lead-name">Full name</label><input id="lead-name" name="name" data-testid="lead-name-input" autocomplete="name" placeholder="Jane Smith" required></div>
+              <div class="field"><label for="lead-name">Full name</label><input id="lead-name" name="name" data-testid="lead-name-input" autocomplete="name" placeholder="Jane Smith" required></div>
               <div class="field"><label for="lead-phone">Phone number</label><input id="lead-phone" name="phone" data-testid="lead-phone-input" type="tel" autocomplete="tel" placeholder="(555) 123-4567" required></div>
-              <div class="field"><label for="lead-email">Email address</label><input id="lead-email" name="email" data-testid="lead-email-input" type="email" autocomplete="email" placeholder="jane@example.com" required></div>
+              <div class="field full"><label for="lead-email">Email address</label><input id="lead-email" name="email" data-testid="lead-email-input" type="email" autocomplete="email" placeholder="jane@example.com" required></div>
               <div class="field full"><label for="lead-message">Anything I should know? <span style="font-weight:400;color:#8c918a">(optional)</span></label><textarea id="lead-message" name="message" data-testid="lead-message-input" placeholder="e.g. I'm turning 65 in June and still working…"></textarea></div>
             </div>
             <button class="pill form-submit" data-testid="lead-form-submit-button" type="submit">✉ Request my free consultation</button>
