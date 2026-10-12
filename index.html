@@ -19,6 +19,27 @@
 @media(max-width:1050px){.nav{gap:16px}.header-phone{display:none}.hero-grid{gap:36px}.hero-photo{height:390px}.parts-grid{grid-template-columns:repeat(2,1fr)}.part-card{min-height:255px}.broker-grid{gap:45px}.feature-grid{gap:38px}.contact-grid{gap:40px}}
 @media(max-width:760px){.wrap{width:min(var(--content),calc(100% - 36px))}.header-inner{min-height:72px;gap:12px}.brand-mark{width:37px;height:37px}.brand-name{font-size:17px}.brand-sub{font-size:8px}.nav,.header-phone{display:none}.header-cta{margin-left:auto;padding:10px 13px;font-size:12px}.mobile-toggle{display:block;margin-left:0}.hero{padding:45px 0 48px}.hero-grid{grid-template-columns:1fr;gap:32px}.hero-copy{padding:0}.hero h1{font-size:clamp(43px,11vw,58px)}.hero-lede{font-size:15px}.hero-visual{max-width:500px;width:100%;margin:0 auto;padding-right:9px}.hero-photo{height:360px;border-radius:170px 170px 18px 18px}.hero-photo-frame{inset:12px -1px 0 12px;border-radius:170px 170px 18px 18px}.hero-caption{left:-4px;bottom:24px;padding:12px;max-width:225px}.parts-bubble{right:0;top:35px}.hero-bottom{margin-top:34px;align-items:flex-start;flex-direction:column;gap:7px}.section{padding:64px 0}.broker-grid,.feature-grid,.medigap-section .feature-grid,.contact-grid{grid-template-columns:1fr;gap:35px}.broker-photo-wrap{width:calc(100% - 15px);max-width:420px;margin:0 auto}.broker-photo{height:360px}.broker-stamp{right:-10px}.broker-copy{font-size:14px}.parts-grid{grid-template-columns:1fr 1fr;gap:11px}.part-card{padding:20px 16px;min-height:280px}.part-card h3{font-size:15px}.part-card .part-sub{font-size:11px}.part-card ul{font-size:11px;gap:8px}.feature-image,.medigap-section .feature-image{height:300px}.feature-grid .feature-image{order:0}.feature-copy{order:1}.compare-table th,.compare-table td{padding:13px 14px}.lead-card{padding:23px 18px}.footer-grid{grid-template-columns:1fr;gap:30px}.footer-bottom{align-items:flex-start;flex-direction:column;gap:10px}}
 @media(max-width:420px){.wrap{width:calc(100% - 28px)}.brand-name{font-size:15px}.brand-sub{letter-spacing:.15em}.header-cta{font-size:11px;padding:9px 10px}.mobile-toggle{width:38px;height:38px}.hero h1{font-size:42px}.hero-actions{gap:9px}.hero-actions .pill{padding:12px 15px;font-size:12px}.trust-row{gap:10px 15px}.hero-photo{height:320px}.parts-grid{grid-template-columns:1fr}.part-card{min-height:auto}.part-card .part-sub{min-height:0}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.section-title{font-size:32px}}
+
+    .carrier-marquee{overflow:hidden;border-block:1px solid #e2d7c8;background:#f2f6f3;padding:16px 0}
+    .marquee-track{display:flex;align-items:center;gap:32px;width:max-content;animation:marquee 38s linear infinite}
+    .marquee-track span{white-space:nowrap;color:#315b40;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;font-weight:750;letter-spacing:.16em;text-transform:uppercase}
+    .marquee-track i{width:6px;height:6px;flex-shrink:0;border-radius:50%;background:#c28e38}
+    @keyframes marquee{to{transform:translateX(-50%)}}
+    .admin-link{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;color:#8b918a;font-size:19px}
+    .admin-link:hover{color:var(--green);background:#e9f0e9}
+    .hero h1 span{display:inline-block}
+    .hero h1 em{position:relative}
+    .hero h1 em:after{content:"";position:absolute;left:0;right:0;bottom:2px;height:7px;background:rgba(212,175,55,.28);z-index:-1}
+    .part-card .text-link{border-radius:999px;background:#fff;padding:9px 13px;box-shadow:0 2px 8px rgba(30,55,38,.06)}
+    .part-card .text-link:hover{background:#e9f0e9}
+    .part-card .part-details{display:none;margin-top:13px;padding:12px;border-radius:10px;background:#f4f6f0;color:#586459;font-size:11px;line-height:1.6}
+    .part-card .part-details.open{display:block}
+    .part-card .part-details a{color:var(--green);font-weight:800;text-decoration:underline}
+    .part-card .text-link[aria-expanded="true"]{background:#e9f0e9}
+    .hero-broker-link{display:inline-flex;align-items:center;gap:10px;margin-top:12px;color:var(--green);font-size:12px;font-weight:800}
+    .hero-broker-link:hover{text-decoration:underline}
+    @media(max-width:760px){.admin-link{display:none}.marquee-track{animation-duration:26s}}
+
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}}
   </style>
 </head>
@@ -33,8 +54,8 @@
         <button data-scroll="parts">Medicare Parts</button><button data-scroll="advantage">Advantage</button><button data-scroll="medigap">Medigap</button><button data-scroll="about">About</button>
       </nav>
       <a class="header-phone" href="tel:+18005550199" data-testid="header-phone-link">(800) 555-0199</a>
-      <a class="pill header-cta" href="#contact" data-testid="header-cta-button">Free Consultation <span aria-hidden="true">↗</span></a>
-      <button class="mobile-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="mobile-menu">☰</button>
+      <a class="pill header-cta" href="#contact" data-testid="header-cta-button">Free Consultation</a><a class="admin-link" data-testid="header-admin-link" aria-label="Broker admin" href="/admin" title="Broker admin"><span aria-hidden="true">⌑</span></a>
+      <button class="mobile-toggle" type="button" data-testid="mobile-menu-toggle" aria-label="Open navigation" aria-expanded="false" aria-controls="mobile-menu">☰</button>
     </div>
     <nav id="mobile-menu" class="mobile-menu wrap" aria-label="Mobile navigation">
       <button data-scroll="parts">Medicare Parts</button><button data-scroll="advantage">Advantage</button><button data-scroll="medigap">Medigap</button><button data-scroll="about">About</button><a class="pill" href="#contact">Free Consultation</a>
@@ -42,31 +63,33 @@
   </header>
 
   <main id="top">
-    <section class="hero hero-section">
+    <section class="hero hero-section" data-testid="hero-section">
       <div class="wrap">
         <div class="hero-grid">
           <div class="hero-copy">
-            <p class="eyebrow">Independent Medicare Broker</p>
-            <h1>Medicare, explained in <em>plain English.</em></h1>
-            <p class="hero-lede">Personal guidance on Parts A, B, C &amp; D, Medicare Advantage, and Medigap — from a licensed broker who works for you, not the insurance companies. It never costs you a penny.</p>
-            <div class="hero-actions"><a class="pill" href="#contact">Book a free consultation <span aria-hidden="true">→</span></a><a class="pill outline" href="#parts">Explore the parts</a></div>
+            <p class="eyebrow" data-testid="hero-kicker">Independent Medicare Broker</p>
+            <h1><span>Medicare,</span><br><span>explained in</span><br><em>plain English.</em></h1>
+            <p class="hero-lede" data-testid="hero-subheadline">Personal guidance on Parts A, B, C &amp; D, Medicare Advantage, and Medigap — from a licensed broker who works for you, not the insurance companies. It never costs you a penny.</p>
+            <div class="hero-actions"><a class="pill" data-testid="hero-cta-button" href="#contact">Book a free consultation <span aria-hidden="true">→</span></a><a class="pill outline" data-testid="hero-explore-button" href="#parts">Explore the parts</a></div>
             <div class="trust-row"><span><i class="check">✓</i>No fee for broker guidance</span><span><i class="check">✓</i>Licensed &amp; independent</span><span><i class="check">✓</i>CMS compliant</span></div>
           </div>
           <div class="hero-visual">
             <div class="hero-photo-frame" aria-hidden="true"></div>
-            <img class="hero-photo" src="https://images.unsplash.com/photo-1761839257647-df30867afd54?auto=format&fit=crop&w=1000&q=85" alt="Senior couple enjoying retirement with coverage peace of mind" fetchpriority="high">
+            <img class="hero-photo" src="https://images.unsplash.com/photo-1761839257647-df30867afd54?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzN8MHwxfHNlYXJjaHwxfHxzZW5pb3IlMjBjb3VwbGUlMjBoYXBweSUyMG91dGRvb3JzfGVufDB8fHx8MTc5MDkxMDUxNHww&ixlib=rb-4.1.0&q=85" alt="Senior couple enjoying retirement with coverage peace of mind" fetchpriority="high">
             <div class="parts-bubble"><strong>A · B · C · D</strong>Four letters. One decision.</div>
-            <div class="hero-caption"><span class="caption-icon" aria-hidden="true">✦</span><span><strong>We'll walk it together.</strong><small>Clear answers, no pressure.</small></span></div>
+            <div class="hero-caption"><span class="caption-icon" aria-hidden="true">✦</span><span><strong>We'll walk it together.</strong><small>Clear answers, no pressure.</small><a class="hero-broker-link" href="tel:+18005550199" data-testid="hero-broker-phone-link">Sarah Jenkins · (800) 555-0199</a></span></div>
           </div>
         </div>
         <div class="hero-bottom"><span><strong>Independent guidance.</strong> Your needs come first.</span><span>Parts A, B, C &amp; D · Advantage · Medigap</span></div>
       </div>
     </section>
 
-    <section id="about" class="section broker broker-section">
+    <div class="carrier-marquee" data-testid="carrier-marquee" aria-label="Supported carriers"><div class="marquee-track"><span>Mutual of Omaha</span><i></i><span>Humana</span><i></i><span>Aetna</span><i></i><span>UnitedHealthcare</span><i></i><span>Cigna</span><i></i><span>Anthem</span><i></i><span>WellCare</span><i></i><span>Blue Cross Blue Shield</span><i></i><span>100% Free Broker Guidance</span><i></i><span>Licensed &amp; Independent</span><i></i></div></div>
+
+    <section id="about" class="section broker broker-section" data-testid="broker-section">
       <div class="wrap broker-grid">
         <div class="broker-photo-wrap">
-          <img class="broker-photo" src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=900&q=85" alt="Sarah Jenkins, independent Medicare broker" loading="lazy">
+          <img class="broker-photo" src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA3MDB8MHwxfHNlYXJjaHwyfHxmcmllbmRseSUyMGluc3VyYW5jZSUyMGJyb2tlciUyMHBvcnRyYWl0fGVufDB8fHx8MTc5MDkxMDUxM3ww&ixlib=rb-4.1.0&q=85" alt="Sarah Jenkins, independent Medicare broker" loading="lazy">
           <div class="broker-stamp"><strong>Sarah Jenkins</strong><small>Independent Broker · CLTC</small></div>
         </div>
         <div>
@@ -80,19 +103,19 @@
       </div>
     </section>
 
-    <section id="parts" class="section parts-section">
+    <section id="parts" class="section parts-section" data-testid="parts-section">
       <div class="wrap">
         <div class="section-heading"><p class="eyebrow">The alphabet of Medicare</p><h2 class="section-title">Parts A, B, C &amp; D — what each one actually does</h2><p class="section-intro">Original Medicare is Parts A and B. Part C is a private all-in-one alternative, and Part D covers prescriptions. Here's the plain-English breakdown.</p></div>
         <div class="parts-grid">
-          <article class="part-card"><span class="part-letter">A</span><h3>Hospital Insurance</h3><p class="part-sub">Your room-and-board coverage</p><ul><li>Inpatient hospital stays</li><li>Skilled nursing facility care</li><li>Hospice care</li><li>Some home health care</li></ul><a class="text-link" href="https://www.medicare.gov/basics/get-started-with-medicare/medicare-basics/what-does-medicare-cover" target="_blank" rel="noreferrer">See 2025 costs <span aria-hidden="true">↗</span></a></article>
-          <article class="part-card"><span class="part-letter">B</span><h3>Medical Insurance</h3><p class="part-sub">Your doctor-and-outpatient coverage</p><ul><li>Doctor visits &amp; specialists</li><li>Outpatient care &amp; lab work</li><li>Preventive services</li><li>Durable medical equipment</li></ul><a class="text-link" href="https://www.medicare.gov/basics/costs/medicare-costs" target="_blank" rel="noreferrer">See 2025 costs <span aria-hidden="true">↗</span></a></article>
-          <article class="part-card"><span class="part-letter">C</span><h3>Medicare Advantage</h3><p class="part-sub">A private alternative to A + B</p><ul><li>Combines Parts A &amp; B</li><li>Often includes Part D</li><li>May add dental &amp; vision</li><li>Uses a plan provider network</li></ul><a class="text-link" href="#advantage">Explore Part C <span aria-hidden="true">→</span></a></article>
-          <article class="part-card"><span class="part-letter">D</span><h3>Prescription Drug Coverage</h3><p class="part-sub">Helps pay for prescriptions</p><ul><li>Prescription medications</li><li>Available as a stand-alone plan</li><li>Can be bundled with Part C</li><li>Formularies vary by plan</li></ul><a class="text-link" href="https://www.medicare.gov/health-drug-plans/part-d" target="_blank" rel="noreferrer">Explore Part D <span aria-hidden="true">↗</span></a></article>
+          <article class="part-card" data-testid="part-card-a"><span class="part-letter">A</span><h3>Hospital Insurance</h3><p class="part-sub">Your room-and-board coverage</p><ul><li>Inpatient hospital stays</li><li>Skilled nursing facility care</li><li>Hospice care</li><li>Some home health care</li></ul><button class="text-link" data-testid="part-a-details-toggle" data-cost-toggle type="button" aria-expanded="false">See 2025 costs <span aria-hidden="true">↗</span></button><div class="part-details"><strong>Part A costs and coverage</strong><br>Premiums and cost-sharing depend on your work history and care. <a href="https://www.medicare.gov/basics/costs/medicare-costs" target="_blank" rel="noreferrer">Check official Medicare costs ↗</a></div></article>
+          <article class="part-card" data-testid="part-card-b"><span class="part-letter">B</span><h3>Medical Insurance</h3><p class="part-sub">Your doctor-and-outpatient coverage</p><ul><li>Doctor visits &amp; specialists</li><li>Outpatient care &amp; lab work</li><li>Preventive screenings</li><li>Durable medical equipment</li></ul><button class="text-link" data-testid="part-b-details-toggle" data-cost-toggle type="button" aria-expanded="false">See 2025 costs <span aria-hidden="true">↗</span></button><div class="part-details"><strong>Part B costs and coverage</strong><br>The standard premium and deductible can change annually; higher-income beneficiaries may pay more. <a href="https://www.medicare.gov/basics/costs/medicare-costs" target="_blank" rel="noreferrer">Check official Medicare costs ↗</a></div></article>
+          <article class="part-card" data-testid="part-card-c"><span class="part-letter">C</span><h3>Medicare Advantage</h3><p class="part-sub">A private alternative to A + B</p><ul><li>Bundles Parts A &amp; B (usually D too)</li><li>Often adds dental, vision &amp; hearing</li><li>Annual out-of-pocket maximum</li><li>Network-based care (HMO / PPO)</li></ul><button class="text-link" data-testid="part-c-details-toggle" data-cost-toggle type="button" aria-expanded="false">See 2025 costs <span aria-hidden="true">↗</span></button><div class="part-details"><strong>Medicare Advantage costs</strong><br>Premiums, copays, and provider networks vary by plan and county. <a href="https://www.medicare.gov/health-drug-plans/health-plans" target="_blank" rel="noreferrer">Compare official plan options ↗</a></div></article>
+          <article class="part-card" data-testid="part-card-d"><span class="part-letter">D</span><h3>Prescription Drug Coverage</h3><p class="part-sub">Helps pay for prescriptions</p><ul><li>Retail &amp; mail-order prescriptions</li><li>Formulary tiers set your copay</li><li>Standalone plan or built into Part C</li><li>Catastrophic coverage protection</li></ul><button class="text-link" data-testid="part-d-details-toggle" data-cost-toggle type="button" aria-expanded="false">See 2025 costs <span aria-hidden="true">↗</span></button><div class="part-details"><strong>Part D prescription costs</strong><br>Premiums, formularies, deductibles, and copays depend on the plan and prescriptions. <a href="https://www.medicare.gov/health-drug-plans/part-d" target="_blank" rel="noreferrer">Explore official Part D coverage ↗</a></div></article>
         </div>
       </div>
     </section>
 
-    <section id="advantage" class="section feature-section advantage-section">
+    <section id="advantage" class="section feature-section advantage-section" data-testid="advantage-section">
       <div class="wrap feature-grid">
         <div class="feature-copy">
           <p class="eyebrow">Medicare Advantage — Part C</p>
@@ -104,11 +127,11 @@
           <a class="pill" href="#contact">Compare your options <span aria-hidden="true">→</span></a>
           <div class="feature-aside">Plan benefits, provider networks, premiums, and availability vary by county and plan. Check details before enrolling.</div>
         </div>
-        <img class="feature-image" src="https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?auto=format&fit=crop&w=1000&q=85" alt="Doctor discussing coverage options with a senior patient" loading="lazy">
+        <img class="feature-image" src="https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzNDR8MHwxfHNlYXJjaHwxfHxkb2N0b3IlMjBjb25zdWx0YXRpb24lMjBzZW5pb3IlMjBwYXRpZW50fGVufDB8fHx8MTc5MDkxMDUxNHww&ixlib=rb-4.1.0&q=85" alt="Doctor discussing coverage options with a senior patient" loading="lazy">
       </div>
     </section>
 
-    <section id="medigap" class="section medigap-section">
+    <section id="medigap" class="section medigap-section" data-testid="medigap-section">
       <div class="wrap feature-grid">
         <img class="feature-image" src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=1000&q=85" alt="Friendly independent broker ready to help explain Medicare Supplement coverage" loading="lazy">
         <div class="feature-copy">
@@ -124,7 +147,7 @@
       </div>
     </section>
 
-    <section class="section compare-section">
+    <section class="section compare-section" data-testid="compare-section">
       <div class="wrap">
         <div class="compare-heading"><p class="eyebrow">The question everyone asks</p><h2 class="section-title">Medigap + Original Medicare vs Medicare Advantage</h2><p class="section-intro" style="margin-inline:auto">Both approaches can provide valuable coverage. The right fit depends on your doctors, budget, travel, and how you prefer to pay for care.</p></div>
         <div class="compare-table-wrap">
@@ -145,7 +168,7 @@
       </div>
     </section>
 
-    <section id="contact" class="section contact-section">
+    <section id="contact" class="section contact-section" data-testid="contact-section">
       <div class="wrap contact-grid">
         <div class="contact-copy">
           <p class="eyebrow">Free, no-obligation help</p><h2 class="section-title">Let's find your right plan</h2>
@@ -154,7 +177,7 @@
         </div>
         <div class="lead-card">
           <h3>Request a free consultation</h3><p>Tell me a little about yourself and I'll be in touch.</p>
-          <form id="lead-form">
+          <form id="lead-form" data-testid="lead-form">
             <div class="form-grid">
               <div class="field full"><label for="lead-name">Full name</label><input id="lead-name" name="name" data-testid="lead-name-input" autocomplete="name" placeholder="Jane Smith" required></div>
               <div class="field"><label for="lead-phone">Phone number</label><input id="lead-phone" name="phone" data-testid="lead-phone-input" type="tel" autocomplete="tel" placeholder="(555) 123-4567" required></div>
@@ -177,7 +200,7 @@
         <div><p class="footer-label">Contact</p><div class="footer-contact"><a href="tel:+18005550199" data-testid="footer-phone-link">☎ (800) 555-0199</a><a href="mailto:sarah@clearpathmedicare.com" data-testid="footer-email-link">✉ sarah@clearpathmedicare.com</a><p>Sarah Jenkins — Independent Medicare Broker, CLTC</p></div></div>
         <div><p class="footer-label">Important disclosures</p><p class="disclosure">Not connected with or endorsed by the United States government or the federal Medicare program. We do not offer every plan available in your area. Please contact Medicare.gov, 1-800-MEDICARE, or your local State Health Insurance Program (SHIP) to get information on all of your options. Plan availability varies by county and state.</p></div>
       </div>
-      <div class="footer-bottom"><span>© <span id="year">2026</span> ClearPath Medicare. All rights reserved.</span><a href="mailto:sarah@clearpathmedicare.com" data-testid="footer-admin-link">Broker Login</a></div>
+      <div class="footer-bottom"><span>© <span id="year">2026</span> ClearPath Medicare. All rights reserved.</span><a href="/admin" data-testid="footer-admin-link">Broker Login</a></div>
     </div>
   </footer>
   <script>
@@ -201,6 +224,11 @@
         menu.classList.remove('open');
         toggle.setAttribute('aria-expanded', 'false');
         toggle.textContent = '☰';
+      }));
+      document.querySelectorAll('.part-card .text-link[data-cost-toggle]').forEach(button => button.addEventListener('click', () => {
+        const details = button.parentElement.querySelector('.part-details');
+        const open = details.classList.toggle('open');
+        button.setAttribute('aria-expanded', String(open));
       }));
       document.querySelector('#lead-form').addEventListener('submit', event => {
         event.preventDefault();
