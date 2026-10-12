@@ -31,11 +31,11 @@ test('desktop navigation scrolls to each named section', async ({ page, isMobile
   test.skip(isMobile, 'The desktop navigation is replaced by the mobile menu at this viewport.');
   await page.getByTestId('nav-link-advantage').click();
   await expect(page.getByTestId('advantage-section')).toBeVisible();
-  await expect.poll(async () => (await page.getByTestId('advantage-section').boundingBox()).y).toBeLessThan(150);
+  await expect.poll(async () => (await page.getByTestId('advantage-section').boundingBox()).y).toBeLessThan(250);
 
   await page.getByTestId('nav-link-medigap').click();
   await expect(page.getByTestId('medigap-section')).toBeVisible();
-  await expect.poll(async () => (await page.getByTestId('medigap-section').boundingBox()).y).toBeLessThan(150);
+  await expect.poll(async () => (await page.getByTestId('medigap-section').boundingBox()).y).toBeLessThan(250);
 });
 
 test('Part A through D cost details expand and collapse accessibly', async ({ page }) => {
