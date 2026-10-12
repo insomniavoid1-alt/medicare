@@ -75,3 +75,11 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Verify the published page responds
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          set -eu
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 10 "$PAGE_URL" -o /tmp/published.html
+          grep -q '<title>ClearPath Medicare | Independent Medicare Broker</title>' /tmp/published.html
+          test -s /tmp/published.html
