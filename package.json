@@ -1,0 +1,12 @@
+{
+  "name": "clearpath-medicare",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Static ClearPath Medicare website with browser regression tests",
+  "scripts": {
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.56.1"
+  }
+}
