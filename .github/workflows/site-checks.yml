@@ -65,6 +65,9 @@ jobs:
         run: |
           mkdir -p site
           cp index.html site/index.html
+          # Serve the same single-page site as a fallback for Pages 404s.
+          cp index.html site/404.html
+          touch site/.nojekyll
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
