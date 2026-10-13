@@ -5,7 +5,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('renders Michael Dovsky branding and all main page sections', async ({ page }) => {
-  await expect(page).toHaveTitle(/Michael Dovsky \| Independent Medicare Broker/);
+  await expect(page).toHaveTitle(/Find the Right Plan \| Medicare Guidance with Michael Dovsky/);
   await expect(page.getByTestId('hero-section')).toBeVisible();
   await expect(page.getByTestId('hero-kicker')).toHaveText('Independent Medicare Broker');
   await expect(page.getByRole('heading', { name: /Medicare, explained in plain English/i, level: 1 })).toBeVisible();
