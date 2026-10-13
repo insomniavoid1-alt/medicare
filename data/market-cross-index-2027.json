@@ -1,0 +1,131 @@
+{
+  "schemaVersion": "1.0.0",
+  "planYear": 2027,
+  "lastReviewed": "2026-10-13",
+  "purpose": "Internal research dataset for planning Medicare education content. Do not publish a figure unless its status is publishable and its source has been checked again.",
+  "publicationPolicy": {
+    "requireSourceForEveryClaim": true,
+    "requireCountyLevelCMSPlanLandscapeValidation": true,
+    "labelEstimatesAsEstimates": true,
+    "neverDescribeCountyPlanExitsAsBeneficiariesDisplacedWithoutEnrollmentEvidence": true,
+    "recheckBeforePublication": "Check CMS, Medicare.gov, and applicable California plan availability for the relevant plan year before publishing."
+  },
+  "regulatoryAnchors": {
+    "baseBeneficiaryPremium": {
+      "value": 41.33,
+      "unit": "USD/month",
+      "status": "verified_official",
+      "note": "2027 Part D base beneficiary premium; it is a benchmark used in calculating plan-specific premiums, not the premium every enrollee pays.",
+      "sourceName": "CMS 2027 Medicare Part D National Average Monthly Bid Amount Information",
+      "sourceUrl": "https://www.cms.gov/newsroom/fact-sheets/medicare-part-d-2027-national-average-monthly-bid-amount-information"
+    },
+    "iraRxCap": {
+      "value": 2400,
+      "unit": "USD/year",
+      "status": "verified_official",
+      "note": "2027 Part D annual out-of-pocket threshold for covered Part D drugs, subject to program rules.",
+      "sourceName": "Medicare.gov — Part D costs",
+      "sourceUrl": "https://www.medicare.gov/health-drug-plans/part-d/basics/costs"
+    },
+    "standardRxDeductible": {
+      "value": 700,
+      "unit": "USD/year maximum",
+      "status": "verified_official",
+      "note": "The maximum deductible a Part D plan may charge in 2027; some plans have a lower deductible or none.",
+      "sourceName": "Medicare.gov — Part D costs",
+      "sourceUrl": "https://www.medicare.gov/health-drug-plans/part-d/basics/costs"
+    },
+    "partBPremiumBaseline": {
+      "value": 209.5,
+      "unit": "USD/month",
+      "status": "estimate_not_final_official_rate",
+      "note": "Appears in the 2026 Medicare Trustees Report as an estimate for 2027, not a final CMS-announced beneficiary premium. Do not present as final.",
+      "sourceName": "2026 Medicare Trustees Report",
+      "sourceUrl": "https://www.cms.gov/oact/tr/2026"
+    },
+    "partBDeductibleBaseline": {
+      "value": 292,
+      "unit": "USD/year",
+      "status": "unverified",
+      "note": "Source not provided; verify against a final CMS announcement before use."
+    },
+    "totalDisplacedPopulation": {
+      "value": 5300000,
+      "unit": "people",
+      "status": "unverified",
+      "note": "Source and definition not provided. Do not publish as a count of people losing coverage without substantiation."
+    }
+  },
+  "carrierExits": [
+    {
+      "provider": "Centene / Wellcare",
+      "countiesExited": 344,
+      "impactTrend": "Severe PDP Collapse",
+      "status": "secondary_source_estimate",
+      "note": "Industry reporting describes a 344-county reduction in Centene's county footprint for 2027. Clarify the source's methodology before calling these outright exits or claiming beneficiaries are displaced.",
+      "sourceName": "Healthcare Dive — 2027 Medicare Advantage county changes",
+      "sourceUrl": "https://www.healthcaredive.com/news/medicare-advantage-cuts-2027-cms-landscape/831563/"
+    },
+    {
+      "provider": "CVS Health / Aetna",
+      "countiesExited": 103,
+      "impactTrend": "SilverScript Choice Regional Exit",
+      "status": "secondary_source_estimate",
+      "note": "Industry reporting describes a 103-county reduction in footprint. The 'SilverScript Choice Regional Exit' label needs separate verification and may conflate Part D with Medicare Advantage.",
+      "sourceName": "Healthcare Dive — 2027 Medicare Advantage county changes",
+      "sourceUrl": "https://www.healthcaredive.com/news/medicare-advantage-cuts-2027-cms-landscape/831563/"
+    },
+    {
+      "provider": "UnitedHealthcare",
+      "countiesExited": 63,
+      "impactTrend": "Targeted Metro Pruning",
+      "status": "secondary_source_estimate",
+      "note": "Industry reporting describes a 63-county reduction in footprint. Validate by product type and compare the official 2026/2027 landscape files before publication.",
+      "sourceName": "Healthcare Dive — 2027 Medicare Advantage county changes",
+      "sourceUrl": "https://www.healthcaredive.com/news/medicare-advantage-cuts-2027-cms-landscape/831563/"
+    },
+    {
+      "provider": "Elevance / Blue Cross",
+      "countiesExited": 56,
+      "impactTrend": "Portfolio Consolidation",
+      "status": "secondary_source_estimate",
+      "note": "Industry reporting describes a 56-county reduction in footprint. Validate by product type and state before publication.",
+      "sourceName": "Healthcare Dive — 2027 Medicare Advantage county changes",
+      "sourceUrl": "https://www.healthcaredive.com/news/medicare-advantage-cuts-2027-cms-landscape/831563/"
+    }
+  ],
+  "californiaMicroMarkets": [
+    {
+      "county": "San Diego",
+      "generalEnrolleesAffected": 44200,
+      "terminatedMaOptions": 9,
+      "zeroPremiumPdpAvailable": false,
+      "status": "unverified_do_not_publish",
+      "note": "No source or calculation method supplied. Rebuild from official 2026/2027 CMS plan landscape and enrollment data. Distinguish Medicare Advantage plans from stand-alone Part D plans."
+    },
+    {
+      "county": "Los Angeles",
+      "generalEnrolleesAffected": 112000,
+      "terminatedMaOptions": 14,
+      "zeroPremiumPdpAvailable": false,
+      "status": "unverified_do_not_publish",
+      "note": "No source or calculation method supplied. Rebuild from official 2026/2027 CMS plan landscape and enrollment data. Distinguish Medicare Advantage plans from stand-alone Part D plans."
+    },
+    {
+      "county": "Orange",
+      "generalEnrolleesAffected": 38900,
+      "terminatedMaOptions": 11,
+      "zeroPremiumPdpAvailable": false,
+      "status": "unverified_do_not_publish",
+      "note": "No source or calculation method supplied. Rebuild from official 2026/2027 CMS plan landscape and enrollment data. Distinguish Medicare Advantage plans from stand-alone Part D plans."
+    },
+    {
+      "county": "Riverside",
+      "generalEnrolleesAffected": 29400,
+      "terminatedMaOptions": 7,
+      "zeroPremiumPdpAvailable": false,
+      "status": "unverified_do_not_publish",
+      "note": "No source or calculation method supplied. Rebuild from official 2026/2027 CMS plan landscape and enrollment data. Distinguish Medicare Advantage plans from stand-alone Part D plans."
+    }
+  ]
+}
