@@ -67,12 +67,35 @@ test('images have alternative text and mobile layout does not overflow horizonta
   }
   if (isMobile) {
     const toggle = page.getByTestId('mobile-menu-toggle');
+    const quickCta = page.getByTestId('mobile-header-cta');
     await expect(toggle).toBeVisible();
+    await expect(quickCta).toBeVisible();
+    await expect(quickCta).toHaveAttribute('href', '#contact');
+    const touchTargets = await Promise.all([toggle, quickCta].map(async locator => {
+      const box = await locator.boundingBox();
+      return { width: box.width, height: box.height };
+    }));
+    for (const target of touchTargets) {
+      expect(target.width).toBeGreaterThanOrEqual(40);
+      expect(target.height).toBeGreaterThanOrEqual(42);
+    }
+    const responsiveLayout = await page.evaluate(() => ({
+      partsColumns: getComputedStyle(document.querySelector('.parts-grid')).gridTemplateColumns.split(' ').length,
+      compareDisplay: getComputedStyle(document.querySelector('.compare-table')).display,
+      compareRowDisplay: getComputedStyle(document.querySelector('.compare-table tbody tr')).display
+    }));
+    expect(responsiveLayout.partsColumns).toBe(1);
+    expect(responsiveLayout.compareDisplay).toBe('block');
+    expect(responsiveLayout.compareRowDisplay).toBe('grid');
     await toggle.click();
     await expect(toggle).toHaveAttribute('aria-expanded', 'true');
     await page.locator('#mobile-menu').getByRole('button', { name: 'Medicare Parts' }).click();
     await expect(toggle).toHaveAttribute('aria-expanded', 'false');
     await expect(page.getByTestId('parts-section')).toBeVisible();
+  } else {
+    await expect(page.getByTestId('mobile-header-cta')).toBeHidden();
+    await expect.poll(async () => page.locator('.hero-grid').evaluate(el => getComputedStyle(el).gridTemplateColumns.split(' ').length)).toBe(2);
+    await expect.poll(async () => page.locator('.compare-table').evaluate(el => getComputedStyle(el).display)).toBe('table');
   }
   const dimensions = await page.evaluate(() => ({
     viewport: document.documentElement.clientWidth,
