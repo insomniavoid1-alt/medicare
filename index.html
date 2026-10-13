@@ -265,5 +265,174 @@
       document.querySelector('#year').textContent = new Date().getFullYear();
     })();
   </script>
+
+  <script id="cp-live-editor">
+  (() => {
+    'use strict';
+    const API_BASE = '/api';
+    let editorPassword = '';
+    let editing = false;
+    let changedImages = new Map();
+    const style = document.createElement('style');
+    style.id = 'cp-live-editor-style';
+    style.textContent = [
+      '#cp-editor-launch{position:fixed;right:18px;bottom:18px;z-index:99990;border:0;border-radius:999px;background:#0f5132;color:#fff;padding:13px 18px;font:700 14px system-ui;box-shadow:0 8px 28px #17291f40;cursor:pointer}',
+      '#cp-editor-panel{position:fixed;right:18px;bottom:18px;z-index:99999;width:min(410px,calc(100vw - 28px));max-height:calc(100vh - 32px);overflow:auto;background:#fff;color:#252a25;border:1px solid #deded7;border-radius:16px;padding:20px;box-shadow:0 18px 60px #10181040;font:14px/1.5 system-ui}',
+      '#cp-editor-panel *{box-sizing:border-box}#cp-editor-panel h2{font:700 20px/1.25 system-ui;margin:0 0 8px;color:#173d29}#cp-editor-panel p{font:13px/1.55 system-ui;margin:8px 0;color:#515951}',
+      '#cp-editor-panel label{display:block;font-weight:700;margin:12px 0 5px}#cp-editor-panel input{width:100%;padding:11px;border:1px solid #bfc9bf;border-radius:8px;font:14px system-ui}',
+      '#cp-editor-panel button{border:0;border-radius:9px;padding:10px 13px;font:700 13px system-ui;cursor:pointer}#cp-editor-panel button:disabled{opacity:.5;cursor:wait}',
+      '#cp-editor-panel .primary{background:#0f5132;color:#fff}#cp-editor-panel .secondary{background:#eef2ed;color:#23442d}#cp-editor-panel .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}',
+      '#cp-editor-panel .status{padding:8px 10px;background:#f3f5f1;border-radius:8px;margin-top:12px;overflow-wrap:anywhere}',
+      'body.cp-editing [contenteditable="true"]{outline:2px dashed #c18a14!important;outline-offset:3px;cursor:text}body.cp-editing img{cursor:pointer}body.cp-editing img:hover{outline:3px solid #c18a14;outline-offset:3px}',
+      '@media(max-width:600px){#cp-editor-launch{right:12px;bottom:12px}#cp-editor-panel{right:12px;bottom:12px}}'
+    ].join('');
+    document.head.appendChild(style);
+    const launch = document.createElement('button');
+    launch.id = 'cp-editor-launch';
+    launch.type = 'button';
+    launch.textContent = '✎ Edit website';
+    launch.setAttribute('aria-label','Open website editor');
+    document.body.appendChild(launch);
+    const panel = document.createElement('section');
+    panel.id = 'cp-editor-panel';
+    panel.hidden = true;
+    panel.setAttribute('role','dialog');
+    panel.setAttribute('aria-label','Website editor');
+    document.body.appendChild(panel);
+
+    function status(message) {
+      const node = panel.querySelector('#cp-editor-status');
+      if (node) node.textContent = message;
+    }
+    function renderLogin() {
+      panel.innerHTML = '<h2>ClearPath site editor</h2><p>Private editing access. Enter the editor password configured in Cloudflare. Your password is kept only in this page memory.</p><label for="cp-editor-password">Editor password</label><input id="cp-editor-password" type="password" autocomplete="current-password" placeholder="Enter your private editor password"><div class="actions"><button class="primary" id="cp-editor-connect">Unlock editor</button><button class="secondary" id="cp-editor-close">Close</button></div><p id="cp-editor-status" class="status" role="status" aria-live="polite">Text and image changes are published through the secure Cloudflare Worker.</p>';
+      panel.querySelector('#cp-editor-connect').addEventListener('click', async () => {
+        const password = panel.querySelector('#cp-editor-password').value;
+        if (!password) { status('Enter your editor password.'); return; }
+        const button = panel.querySelector('#cp-editor-connect');
+        button.disabled = true;
+        editorPassword = password;
+        try {
+          await apiRequest('/health', {method:'GET'});
+          editing = true;
+          changedImages = new Map();
+          document.body.classList.add('cp-editing');
+          launch.hidden = true;
+          renderEditor();
+        } catch (error) {
+          editorPassword = '';
+          status('Could not unlock: ' + error.message + '. Check the Cloudflare Worker route and configuration.');
+        } finally {
+          const b = panel.querySelector('#cp-editor-connect');
+          if (b) b.disabled = false;
+        }
+      });
+      panel.querySelector('#cp-editor-close').addEventListener('click', closePanel);
+    }
+    async function apiRequest(path, options) {
+      const opts = Object.assign({method:'POST'}, options || {});
+      opts.headers = Object.assign({'Content-Type':'application/json','Authorization':'Bearer ' + editorPassword}, opts.headers || {});
+      const response = await fetch(API_BASE + path, opts);
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || 'Request failed (' + response.status + ')');
+      return result;
+    }
+    function renderEditor() {
+      panel.innerHTML = '<h2>Editing your website</h2><p>Click a heading, paragraph, link, or other text to edit it. Click an image to replace it. Select Save &amp; publish when ready.</p><div class="actions"><button class="primary" id="cp-editor-publish">Save &amp; publish</button><button class="secondary" id="cp-editor-discard">Discard edits</button><button class="secondary" id="cp-editor-exit">Exit</button></div><p id="cp-editor-status" class="status" role="status" aria-live="polite">Editor unlocked. Click text or an image on the page.</p>';
+      panel.querySelector('#cp-editor-publish').addEventListener('click', publish);
+      panel.querySelector('#cp-editor-discard').addEventListener('click', () => {
+        if (confirm('Discard unsaved changes and reload the page?')) location.reload();
+      });
+      panel.querySelector('#cp-editor-exit').addEventListener('click', exitEditor);
+    }
+    function closePanel() { panel.hidden = true; launch.hidden = false; }
+    function exitEditor() {
+      editing = false;
+      editorPassword = '';
+      changedImages.clear();
+      document.body.classList.remove('cp-editing');
+      document.querySelectorAll('[contenteditable="true"]').forEach(el => el.removeAttribute('contenteditable'));
+      panel.hidden = true;
+      launch.hidden = false;
+    }
+    launch.addEventListener('click', () => {
+      panel.hidden = false;
+      launch.hidden = true;
+      renderLogin();
+    });
+    const editableSelector = 'h1,h2,h3,h4,p,li,a,button,span,small,strong,em,td,th,figcaption,label';
+    document.addEventListener('click', event => {
+      if (!editing || event.target.closest('#cp-editor-panel,#cp-editor-launch')) return;
+      const image = event.target.closest('img');
+      if (image) {
+        event.preventDefault(); event.stopPropagation();
+        const picker = document.createElement('input');
+        picker.type = 'file'; picker.accept = 'image/jpeg,image/png,image/webp,image/gif'; picker.hidden = true;
+        document.body.appendChild(picker);
+        picker.addEventListener('change', async () => {
+          const chosen = picker.files && picker.files[0];
+          picker.remove();
+          if (!chosen) return;
+          if (chosen.size > 8 * 1024 * 1024) { status('Please choose an image smaller than 8 MB.'); return; }
+          status('Uploading image securely…');
+          try {
+            const dataUrl = await new Promise((resolve,reject) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(String(reader.result));
+              reader.onerror = () => reject(new Error('Could not read that image.'));
+              reader.readAsDataURL(chosen);
+            });
+            const data = dataUrl.split(',')[1];
+            const result = await apiRequest('/upload', {body:JSON.stringify({name:chosen.name,data})});
+            image.src = result.url;
+            changedImages.set(image, result.url);
+            status('Image uploaded. Choose Save & publish to publish the change.');
+          } catch (error) { status('Image upload failed: ' + error.message); }
+        }, {once:true});
+        picker.click();
+        return;
+      }
+      const target = event.target.closest(editableSelector);
+      if (!target || target.closest('script,style,#cp-editor-panel')) return;
+      event.preventDefault();
+      event.stopPropagation();
+      document.querySelectorAll('[contenteditable="true"]').forEach(el => { if (el !== target) el.removeAttribute('contenteditable'); });
+      target.setAttribute('contenteditable','true');
+      target.focus();
+    }, true);
+
+    async function publish() {
+      if (!editing) return;
+      const button = panel.querySelector('#cp-editor-publish');
+      button.disabled = true;
+      status('Preparing page changes…');
+      try {
+        const clone = document.documentElement.cloneNode(true);
+        clone.querySelectorAll('#cp-editor-panel,#cp-editor-launch,#cp-live-editor-style').forEach(el => el.remove());
+        clone.querySelectorAll('[contenteditable="true"]').forEach(el => el.removeAttribute('contenteditable'));
+        const liveImages = Array.from(document.querySelectorAll('img'));
+        const cloneImages = Array.from(clone.querySelectorAll('img'));
+        liveImages.forEach((img,index) => {
+          if (cloneImages[index] && changedImages.has(img)) cloneImages[index].setAttribute('src',changedImages.get(img));
+        });
+        clone.querySelectorAll('[data-cp-editor-temp]').forEach(el => el.remove());
+        const html = '<!doctype html>\n' + clone.outerHTML;
+        status('Publishing your changes…');
+        const result = await apiRequest('/publish',{body:JSON.stringify({html})});
+        status(result.message || 'Changes published to the deployment pipeline.');
+        editorPassword = '';
+        setTimeout(() => {
+          if (confirm('Your changes were submitted. Reload this page to check the deployed version?')) location.reload();
+        },1200);
+      } catch (error) {
+        status('Could not publish: ' + error.message + '. Your on-page edits remain here until you refresh.');
+      } finally {
+        const b = panel.querySelector('#cp-editor-publish');
+        if (b) b.disabled = false;
+      }
+    }
+  })();
+  </script>
+
 </body>
 </html>
