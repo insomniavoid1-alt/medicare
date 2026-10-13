@@ -57,6 +57,14 @@ test('mobile motion stays subtle, lightweight, and respects reduced motion', asy
   expect(motion.menuClosed).toBe(true);
   expect(motion.menuTransition).toContain('0.28s');
 
+  const toggle = page.getByTestId('mobile-menu-toggle');
+  const menu = page.locator('#mobile-menu');
+  await toggle.click();
+  await expect(menu).toBeVisible();
+  await expect.poll(() => menu.evaluate(el => getComputedStyle(el).opacity)).toBe('1');
+  await toggle.click();
+  await expect(menu).toBeHidden();
+
   await page.emulateMedia({ reducedMotion: 'reduce' });
   const reduced = await page.evaluate(() => ({
     cardTransition: getComputedStyle(document.querySelector('.part-card')).transitionDuration,
