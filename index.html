@@ -110,14 +110,16 @@
       to { opacity: 1; transform: translate3d(0, 0, 0); }
     }
     /* Keep content hidden only during the short pre-paint arm phase; start motion after first paint. */
-    html.cp-entrance-pending:not(.cp-entrance-ready) .site-header,
-    html.cp-entrance-pending:not(.cp-entrance-ready) .hero-copy,
-    html.cp-entrance-pending:not(.cp-entrance-ready) .hero-visual,
-    html.cp-entrance-pending:not(.cp-entrance-ready) .hero-bottom { opacity: 0; }
-    html.cp-entrance-ready .site-header { animation: cp-soft-enter 1.15s cubic-bezier(.22,1,.36,1) both; }
-    html.cp-entrance-ready .hero-copy { animation: cp-soft-enter 1.25s .08s cubic-bezier(.22,1,.36,1) both; }
-    html.cp-entrance-ready .hero-visual { animation: cp-soft-enter 1.3s .16s cubic-bezier(.22,1,.36,1) both; }
-    html.cp-entrance-ready .hero-bottom { animation: cp-soft-enter 1.1s .22s cubic-bezier(.22,1,.36,1) both; }
+    @media (min-width: 761px) {
+      html.cp-entrance-pending:not(.cp-entrance-ready) .site-header,
+      html.cp-entrance-pending:not(.cp-entrance-ready) .hero-copy,
+      html.cp-entrance-pending:not(.cp-entrance-ready) .hero-visual,
+      html.cp-entrance-pending:not(.cp-entrance-ready) .hero-bottom { opacity: 0; }
+      html.cp-entrance-ready .site-header { animation: cp-soft-enter 1.15s cubic-bezier(.22,1,.36,1) both; }
+      html.cp-entrance-ready .hero-copy { animation: cp-soft-enter 1.25s .08s cubic-bezier(.22,1,.36,1) both; }
+      html.cp-entrance-ready .hero-visual { animation: cp-soft-enter 1.3s .16s cubic-bezier(.22,1,.36,1) both; }
+      html.cp-entrance-ready .hero-bottom { animation: cp-soft-enter 1.1s .22s cubic-bezier(.22,1,.36,1) both; }
+    }
 
     /* Desktop hero choreography: animate each headline row and supporting text
        independently. Animating .hero-copy as one block made every line arrive
