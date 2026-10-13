@@ -5,25 +5,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#faf8f5">
   <script>
-    /* Fresh visits and reloads start at the top; preserve hash links and Back/Forward restoration. */
+    /* Normalize initial scroll across browsers. Explicit hash links still land on their target. */
     (() => {
-      const nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
-      const freshVisit = !nav || nav.type === 'navigate' || nav.type === 'reload';
-      if (!freshVisit || location.hash) return;
       if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
       const goTop = () => {
         if (location.hash) return;
-        document.documentElement.style.scrollBehavior = 'auto';
-        document.body.style.scrollBehavior = 'auto';
+        const root = document.documentElement;
+        const body = document.body;
+        const oldRootBehavior = root.style.scrollBehavior;
+        const oldBodyBehavior = body ? body.style.scrollBehavior : '';
+        root.style.scrollBehavior = 'auto';
+        if (body) body.style.scrollBehavior = 'auto';
         window.scrollTo(0, 0);
+        requestAnimationFrame(() => {
+          window.scrollTo(0, 0);
+          window.setTimeout(() => {
+            window.scrollTo(0, 0);
+            root.style.scrollBehavior = oldRootBehavior;
+            if (body) body.style.scrollBehavior = oldBodyBehavior;
+          }, 100);
+        });
       };
       document.addEventListener('DOMContentLoaded', goTop, { once: true });
       window.addEventListener('load', goTop, { once: true });
-      window.addEventListener('pageshow', event => {
-        if (!event.persisted) goTop();
-      });
+      window.addEventListener('pageshow', goTop);
     })();
-  </script>
+  </script>t>
   <meta name="description" content="Independent Medicare guidance in plain English. Understand Parts A, B, C and D, Medicare Advantage, and Medigap with Michael Dovsky, Independent Medicare Broker.">
   <title>Michael Dovsky | Independent Medicare Broker</title>
   <style>
