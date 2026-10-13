@@ -2,5 +2,4 @@
 User-agent: *
 Allow: /
 
-# Add a Sitemap directive after the production domain and sitemap URL are finalized.
-# Example: Sitemap: https://www.example.com/sitemap.xml
+Sitemap: https://findtherightplan.com/sitemap.xml
