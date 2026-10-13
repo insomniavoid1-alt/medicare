@@ -445,16 +445,14 @@
         return;
       }
       const bg = event.target.closest('[style*="background-image"]');
-      if (bg && !isExcluded(bg)) {
-        const current = bg.style.backgroundImage;
-        const match = current.match(/^url\(["']?(.*?)["']?\)$/);
-        if (match) {
-          event.preventDefault(); event.stopPropagation();
-          const fake = {getAttribute:(name)=>name==='alt'?(bg.getAttribute('aria-label')||''):(match[1]),setAttribute:(name,value)=>{if(name==='alt')bg.setAttribute('aria-label',value);},closest:()=>null};
-          selectedImage = null;
-          status('This element uses a CSS background image. Replace it by editing its background-image URL in the site styles, or use a standard image element instead.');
-          return;
-        }
+      if (bg && !isExcluded(bg) && bg.style.backgroundImage && bg.style.backgroundImage !== 'none') {
+        event.preventDefault(); event.stopPropagation();
+        selectedBackground = bg;
+        selectedImage = null;
+        panel.querySelector('#cp-editor-alt').value = bg.getAttribute('aria-label') || '';
+        panel.querySelector('#cp-editor-selection').textContent = 'Selected background image: ' + (bg.getAttribute('aria-label') || bg.tagName.toLowerCase());
+        chooseImage(bg);
+        return;
       }
       const target = findTextTarget(event.target);
       if (!target) return;
