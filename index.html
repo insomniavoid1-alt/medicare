@@ -108,6 +108,38 @@
     .hero-copy { animation: cp-soft-enter 1.25s .08s cubic-bezier(.22,1,.36,1) both; }
     .hero-visual { animation: cp-soft-enter 1.3s .16s cubic-bezier(.22,1,.36,1) both; }
     .hero-bottom { animation: cp-soft-enter 1.1s .22s cubic-bezier(.22,1,.36,1) both; }
+
+    /* Desktop hero choreography: animate each headline row and supporting text
+       independently. Animating .hero-copy as one block made every line arrive
+       together, which erased the intended row-by-row entrance. */
+    @keyframes cp-line-enter {
+      from { opacity: 0; transform: translate3d(0, .42em, 0); }
+      to { opacity: 1; transform: translate3d(0, 0, 0); }
+    }
+    @media (min-width: 761px) and (prefers-reduced-motion: no-preference) {
+      .hero-copy { animation: none; }
+      .hero-copy > .eyebrow {
+        animation: cp-soft-enter .72s .04s cubic-bezier(.22,1,.36,1) both;
+      }
+      .hero-copy > h1 > span,
+      .hero-copy > h1 > em {
+        display: inline-block;
+        animation: cp-line-enter .88s cubic-bezier(.22,1,.36,1) both;
+      }
+      .hero-copy > h1 > span:nth-of-type(1) { animation-delay: .13s; }
+      .hero-copy > h1 > span:nth-of-type(2) { animation-delay: .29s; }
+      .hero-copy > h1 > em { animation-delay: .45s; }
+      .hero-copy > .hero-lede {
+        animation: cp-soft-enter .82s .58s cubic-bezier(.22,1,.36,1) both;
+      }
+      .hero-copy > .hero-actions {
+        animation: cp-soft-enter .82s .7s cubic-bezier(.22,1,.36,1) both;
+      }
+      .hero-copy > .trust-row {
+        animation: cp-soft-enter .82s .82s cubic-bezier(.22,1,.36,1) both;
+      }
+    }
+
     html.cp-motion-ready .cp-reveal {
       opacity: 0;
       transform: translate3d(0, 24px, 0);

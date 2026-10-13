@@ -43,11 +43,20 @@ test('desktop page-load entrance and page-wide scroll reveals are active', async
   const motion = await page.evaluate(() => ({
     reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches,
     headerAnimation: getComputedStyle(document.querySelector('.site-header')).animationName,
+    heroCopyAnimation: getComputedStyle(document.querySelector('.hero-copy')).animationName,
+    headlineLines: [...document.querySelectorAll('.hero-copy > h1 > span, .hero-copy > h1 > em')].map(el => ({
+      animationName: getComputedStyle(el).animationName,
+      animationDelay: getComputedStyle(el).animationDelay
+    })),
     revealCount: document.querySelectorAll('.cp-reveal').length,
     hiddenRevealTargets: [...document.querySelectorAll('.cp-reveal')].filter(el => getComputedStyle(el).opacity === '0').length
   }));
   if (!motion.reducedMotion) {
     expect(motion.headerAnimation).toContain('cp-soft-enter');
+    expect(motion.heroCopyAnimation).toBe('none');
+    expect(motion.headlineLines).toHaveLength(3);
+    expect(motion.headlineLines.every(line => line.animationName === 'cp-line-enter')).toBe(true);
+    expect(new Set(motion.headlineLines.map(line => line.animationDelay)).size).toBe(3);
     expect(motion.revealCount).toBeGreaterThan(15);
     await expect.poll(() => page.locator('.cp-reveal.cp-visible').count()).toBeGreaterThan(0);
     expect(motion.hiddenRevealTargets).toBeGreaterThan(0);
