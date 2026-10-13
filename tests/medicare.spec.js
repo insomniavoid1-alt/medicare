@@ -38,6 +38,28 @@ test('desktop navigation scrolls to each named section', async ({ page, isMobile
   await expect.poll(async () => (await page.getByTestId('medigap-section').boundingBox()).y).toBeLessThan(250);
 });
 
+test('desktop page-load entrance and page-wide scroll reveals are active', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'This motion audit targets the desktop choreography.');
+  const motion = await page.evaluate(() => ({
+    reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches,
+    headerAnimation: getComputedStyle(document.querySelector('.site-header')).animationName,
+    revealCount: document.querySelectorAll('.cp-reveal').length,
+    nestedTargets: [...document.querySelectorAll('.cp-reveal')].filter(el =>
+      /^(P|A|LI|SPAN|SMALL|STRONG)$/.test(el.tagName)
+    ).length
+  }));
+  if (!motion.reducedMotion) {
+    expect(motion.headerAnimation).toContain('cp-soft-enter');
+    expect(motion.revealCount).toBeGreaterThan(15);
+    expect(motion.nestedTargets).toBe(0);
+    const lowerSection = page.locator('#medigap .feature-copy > .section-title').first();
+    await lowerSection.scrollIntoViewIfNeeded();
+    await expect.poll(() => lowerSection.evaluate(el => el.classList.contains('cp-visible'))).toBe(true);
+  } else {
+    expect(motion.headerAnimation).toBe('none');
+  }
+});
+
 test('mobile motion stays subtle, lightweight, and respects reduced motion', async ({ page, isMobile }) => {
   test.skip(!isMobile, 'This motion audit targets the mobile art direction.');
   const motion = await page.evaluate(() => {
