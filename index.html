@@ -4,33 +4,6 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#faf8f5">
-  <script>
-    /* Normalize initial scroll across browsers. Explicit hash links still land on their target. */
-    (() => {
-      if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-      const goTop = () => {
-        if (location.hash) return;
-        const root = document.documentElement;
-        const body = document.body;
-        const oldRootBehavior = root.style.scrollBehavior;
-        const oldBodyBehavior = body ? body.style.scrollBehavior : '';
-        root.style.scrollBehavior = 'auto';
-        if (body) body.style.scrollBehavior = 'auto';
-        window.scrollTo(0, 0);
-        requestAnimationFrame(() => {
-          window.scrollTo(0, 0);
-          window.setTimeout(() => {
-            window.scrollTo(0, 0);
-            root.style.scrollBehavior = oldRootBehavior;
-            if (body) body.style.scrollBehavior = oldBodyBehavior;
-          }, 100);
-        });
-      };
-      document.addEventListener('DOMContentLoaded', goTop, { once: true });
-      window.addEventListener('load', goTop, { once: true });
-      window.addEventListener('pageshow', goTop);
-    })();
-  </script>
   <script id="cp-entrance-arm">
     /* Arm entrance motion before first paint; the start script releases it after paint. */
     document.documentElement.classList.add('cp-entrance-pending');
