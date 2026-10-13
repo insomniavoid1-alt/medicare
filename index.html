@@ -20,10 +20,10 @@
 @media(max-width:760px){.wrap{width:min(var(--content),calc(100% - 36px))}.header-inner{min-height:72px;gap:12px}.brand-mark{width:37px;height:37px}.brand-name{font-size:17px}.brand-sub{font-size:8px}.nav,.header-phone{display:none}.header-cta{margin-left:auto;padding:10px 13px;font-size:12px}.mobile-toggle{display:block;margin-left:0}.hero{padding:45px 0 48px}.hero-grid{grid-template-columns:1fr;gap:32px}.hero-copy{padding:0}.hero h1{font-size:clamp(43px,11vw,58px)}.hero-lede{font-size:15px}.hero-visual{max-width:500px;width:100%;margin:0 auto;padding-right:9px}.hero-photo{height:360px;border-radius:170px 170px 18px 18px}.hero-photo-frame{inset:12px -1px 0 12px;border-radius:170px 170px 18px 18px}.hero-caption{left:-4px;bottom:24px;padding:12px;max-width:225px}.parts-bubble{right:0;top:35px}.hero-bottom{margin-top:34px;align-items:flex-start;flex-direction:column;gap:7px}.section{padding:64px 0}.broker-grid,.feature-grid,.medigap-section .feature-grid,.contact-grid{grid-template-columns:1fr;gap:35px}.broker-photo-wrap{width:calc(100% - 15px);max-width:420px;margin:0 auto}.broker-photo{height:360px}.broker-stamp{right:-10px}.broker-copy{font-size:14px}.parts-grid{grid-template-columns:1fr 1fr;gap:11px}.part-card{padding:20px 16px;min-height:280px}.part-card h3{font-size:15px}.part-card .part-sub{font-size:11px}.part-card ul{font-size:11px;gap:8px}.feature-image,.medigap-section .feature-image{height:300px}.feature-grid .feature-image{order:0}.feature-copy{order:1}.compare-table th,.compare-table td{padding:13px 14px}.lead-card{padding:23px 18px}.footer-grid{grid-template-columns:1fr;gap:30px}.footer-bottom{align-items:flex-start;flex-direction:column;gap:10px}}
 @media(max-width:420px){.wrap{width:calc(100% - 28px)}.brand-name{font-size:15px}.brand-sub{letter-spacing:.15em}.header-cta{font-size:11px;padding:9px 10px}.mobile-toggle{width:38px;height:38px}.hero h1{font-size:42px}.hero-actions{gap:9px}.hero-actions .pill{padding:12px 15px;font-size:12px}.trust-row{gap:10px 15px}.hero-photo{height:320px}.parts-grid{grid-template-columns:1fr}.part-card{min-height:auto}.part-card .part-sub{min-height:0}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.section-title{font-size:32px}}
 
-    .carrier-marquee{overflow:hidden;border-block:1px solid #e2d7c8;background:#f2f6f3;padding:16px 0}
+    .carrier-marquee{overflow:hidden;border-block:1px solid #e2d7c8;background:#f2f6f3;padding:16px 0;cursor:grab;touch-action:none;user-select:none}.carrier-marquee.is-dragging{position:fixed!important;z-index:9999;margin:0!important;box-shadow:0 8px 28px rgba(29,46,35,.18);cursor:grabbing}
     .marquee-track{display:flex;align-items:center;width:max-content;will-change:transform}
     .marquee-group{display:flex;align-items:center;gap:32px;flex-shrink:0;padding-right:32px}
-    .marquee-track span{white-space:nowrap;color:#315b40;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;font-weight:750;letter-spacing:.16em;text-transform:uppercase}
+    .marquee-track span{white-space:nowrap;color:#315b40;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.65px;font-weight:750;letter-spacing:.16em;text-transform:uppercase}
     .marquee-track i{width:6px;height:6px;flex-shrink:0;border-radius:50%;background:#c28e38}
     .carrier-marquee.is-ready .marquee-track{animation:marquee 42s linear infinite}
     .carrier-marquee:hover .marquee-track{animation-play-state:paused}
@@ -162,6 +162,40 @@
         track.appendChild(clone);
         track.dataset.loopReady = 'true';
         marquee.classList.add('is-ready');
+
+        var pointerStart = null;
+        var dragOrigin = null;
+        var hasMoved = false;
+        marquee.addEventListener('pointerdown', function (event) {
+          if (event.button !== 0 && event.pointerType !== 'touch') return;
+          pointerStart = { x: event.clientX, y: event.clientY };
+          var rect = marquee.getBoundingClientRect();
+          dragOrigin = { x: rect.left, y: rect.top, width: rect.width, height: rect.height };
+          hasMoved = false;
+          marquee.setPointerCapture(event.pointerId);
+        });
+        marquee.addEventListener('pointermove', function (event) {
+          if (!pointerStart || !dragOrigin) return;
+          var dx = event.clientX - pointerStart.x;
+          var dy = event.clientY - pointerStart.y;
+          if (!hasMoved && Math.hypot(dx, dy) < 5) return;
+          if (!hasMoved) {
+            marquee.classList.add('is-dragging');
+            marquee.style.left = dragOrigin.x + 'px';
+            marquee.style.top = dragOrigin.y + 'px';
+            marquee.style.width = dragOrigin.width + 'px';
+            marquee.style.height = dragOrigin.height + 'px';
+            hasMoved = true;
+          }
+          marquee.style.left = Math.max(0, Math.min(window.innerWidth - dragOrigin.width, dragOrigin.x + dx)) + 'px';
+          marquee.style.top = Math.max(0, Math.min(window.innerHeight - dragOrigin.height, dragOrigin.y + dy)) + 'px';
+        });
+        function finishMarqueeDrag() {
+          pointerStart = null;
+          dragOrigin = null;
+        }
+        marquee.addEventListener('pointerup', finishMarqueeDrag);
+        marquee.addEventListener('pointercancel', finishMarqueeDrag);
       })();
     </script>
 
