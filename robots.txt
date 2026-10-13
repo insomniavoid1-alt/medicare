@@ -1,0 +1,6 @@
+# Allow public search engines to crawl the public website.
+User-agent: *
+Allow: /
+
+# Add a Sitemap directive after the production domain and sitemap URL are finalized.
+# Example: Sitemap: https://www.example.com/sitemap.xml
