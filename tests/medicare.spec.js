@@ -140,4 +140,16 @@ test('images have alternative text and mobile layout does not overflow horizonta
     content: document.documentElement.scrollWidth
   }));
   expect(dimensions.content).toBeLessThanOrEqual(dimensions.viewport + 1);
+  if (isMobile) {
+    await page.setViewportSize({ width: 320, height: 800 });
+    const narrow = await page.evaluate(() => ({
+      viewport: document.documentElement.clientWidth,
+      content: document.documentElement.scrollWidth,
+      brand: document.querySelector('.brand').getBoundingClientRect().width,
+      cta: document.querySelector('.mobile-header-cta').getBoundingClientRect().width,
+      toggle: document.querySelector('.mobile-toggle').getBoundingClientRect().width
+    }));
+    expect(narrow.content).toBeLessThanOrEqual(narrow.viewport + 1);
+    expect(narrow.brand + narrow.cta + narrow.toggle).toBeLessThanOrEqual(narrow.viewport);
+  }
 });
