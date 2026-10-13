@@ -352,6 +352,7 @@
       });
     }
     let selectedImage = null;
+    let selectedBackground = null;
     function closePanel() { panel.hidden = true; launch.hidden = false; }
     function exitEditor() {
       editing = false;
@@ -382,6 +383,7 @@
     }
     function selectImage(img) {
       selectedImage = img;
+      selectedBackground = null;
       const field = panel.querySelector('#cp-editor-alt');
       if (field) field.value = img.getAttribute('alt') || '';
       const info = panel.querySelector('#cp-editor-selection');
@@ -406,21 +408,31 @@
             reader.readAsDataURL(chosen);
           });
           const result = await apiRequest('/upload', {body:JSON.stringify({name:chosen.name.replace(/[^a-zA-Z0-9._-]/g,'-'),data:dataUrl.split(',')[1]})});
-          const picture = img.closest('picture');
-          if (picture) picture.querySelectorAll('source').forEach(source => source.removeAttribute('srcset'));
-          img.src = result.url;
-          img.removeAttribute('srcset');
-          img.removeAttribute('sizes');
-          changedImages.set(img, result.url);
-          selectImage(img);
+          if (img instanceof HTMLImageElement) {
+            const picture = img.closest('picture');
+            if (picture) picture.querySelectorAll('source').forEach(source => source.removeAttribute('srcset'));
+            img.src = result.url;
+            img.removeAttribute('srcset');
+            img.removeAttribute('sizes');
+            changedImages.set(img, result.url);
+            selectImage(img);
+          } else {
+            img.style.backgroundImage = 'url("' + result.url.replace(/"/g, '%22') + '")';
+            selectedBackground = img;
+            selectedImage = null;
+            panel.querySelector('#cp-editor-alt').value = img.getAttribute('aria-label') || '';
+            panel.querySelector('#cp-editor-selection').textContent = 'Selected background image: ' + (img.getAttribute('aria-label') || img.tagName.toLowerCase());
+          }
           status('Image uploaded. It will be published when you choose Save & publish.');
         } catch (error) { status('Image upload failed: ' + error.message); }
       }, {once:true});
       picker.click();
     }
     function applyAlt() {
-      if (!selectedImage) { status('Select an image on the page first.'); return; }
-      selectedImage.setAttribute('alt', panel.querySelector('#cp-editor-alt').value.trim());
+      const description = panel.querySelector('#cp-editor-alt').value.trim();
+      if (selectedImage) selectedImage.setAttribute('alt', description);
+      else if (selectedBackground) selectedBackground.setAttribute('aria-label', description);
+      else { status('Select an image or image-backed area first.'); return; }
       status('Image description updated. Choose Save & publish to keep it.');
     }
     document.addEventListener('click', event => {
