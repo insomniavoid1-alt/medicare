@@ -267,6 +267,46 @@
       .cp-reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
     }
 
+
+    /* Mobile motion system: restrained stagger, soft depth, and no persistent GPU layers. */
+    @keyframes cp-mobile-arrive {
+      from { opacity: 0; transform: translate3d(0, 18px, 0) scale(.985); }
+      to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+    }
+    @keyframes cp-tile-arrive {
+      from { opacity: 0; transform: translate3d(0, 13px, 0) scale(.965); }
+      to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+    }
+    @media (max-width:760px) and (prefers-reduced-motion:no-preference) {
+      .hero-copy .eyebrow { animation: cp-mobile-arrive .62s .02s cubic-bezier(.2,.75,.25,1) both; }
+      .hero-copy h1 { animation: cp-mobile-arrive .72s .07s cubic-bezier(.2,.75,.25,1) both; }
+      .hero-copy .hero-lede { animation: cp-mobile-arrive .68s .14s cubic-bezier(.2,.75,.25,1) both; }
+      .hero-copy .hero-actions { animation: cp-mobile-arrive .68s .2s cubic-bezier(.2,.75,.25,1) both; }
+      .hero-copy .trust-row { animation: cp-mobile-arrive .65s .26s cubic-bezier(.2,.75,.25,1) both; }
+      .hero-abcd-panel { animation: cp-mobile-arrive .78s .12s cubic-bezier(.2,.75,.25,1) both; }
+      .hero-abcd-tile { animation: cp-tile-arrive .62s cubic-bezier(.2,.75,.25,1) both; }
+      .hero-abcd-tile:nth-child(1) { animation-delay: .22s; }
+      .hero-abcd-tile:nth-child(2) { animation-delay: .29s; }
+      .hero-abcd-tile:nth-child(3) { animation-delay: .36s; }
+      .hero-abcd-tile:nth-child(4) { animation-delay: .43s; }
+      .cp-reveal {
+        opacity: 0;
+        transform: translate3d(0, 18px, 0) scale(.99);
+        transition: opacity .62s cubic-bezier(.2,.75,.25,1), transform .72s cubic-bezier(.2,.75,.25,1);
+        transition-delay: var(--cp-reveal-delay, 0ms);
+      }
+      .cp-reveal.cp-visible { opacity: 1; transform: translate3d(0,0,0) scale(1); }
+      .part-card, .benefit-card, .hero-abcd-tile, .pill, .contact-link {
+        transition-timing-function: cubic-bezier(.2,.75,.25,1);
+      }
+      .part-card:active, .benefit-card:active { transform: scale(.985); }
+      .pill:active { transform: translateY(1px) scale(.985); }
+    }
+    @media (prefers-reduced-motion:reduce) {
+      .hero-copy .eyebrow, .hero-copy h1, .hero-copy .hero-lede,
+      .hero-copy .hero-actions, .hero-copy .trust-row, .hero-abcd-panel,
+      .hero-abcd-tile { animation:none!important; }
+    }
   </style>
 </head>
 <body>
