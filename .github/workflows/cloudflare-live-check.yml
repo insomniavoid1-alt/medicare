@@ -69,12 +69,19 @@ jobs:
                 title: document.title,
                 reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches,
                 headerAnimation: getComputedStyle(document.querySelector('.site-header')).animationName,
+                headlineLines: [...document.querySelectorAll('.hero-copy > h1 > span, .hero-copy > h1 > em')].map(el => ({
+                  animationName: getComputedStyle(el).animationName,
+                  animationDelay: getComputedStyle(el).animationDelay
+                })),
                 revealCount: document.querySelectorAll('.cp-reveal').length
               }));
               console.log('Initial live desktop animation state:', JSON.stringify(state));
               if (state.title !== 'Michael Dovsky | Independent Medicare Broker') throw new Error('Unexpected live page title');
               if (state.reducedMotion) throw new Error('Test browser unexpectedly has reduced motion enabled');
               if (!state.headerAnimation.includes('cp-soft-enter')) throw new Error('Desktop header entrance animation is not active on Cloudflare');
+              if (state.headlineLines.length !== 3) throw new Error('Expected three separate desktop headline rows');
+              if (!state.headlineLines.every(line => line.animationName.includes('cp-line-enter'))) throw new Error('Desktop headline rows are not independently animated');
+              if (new Set(state.headlineLines.map(line => line.animationDelay)).size !== 3) throw new Error('Desktop headline rows do not have staggered entrance timing');
               if (state.revealCount <= 15) throw new Error('Expected page-wide scroll reveal targets are missing');
               const lowerSection = page.locator('#medigap .feature-copy > .section-title').first();
               await lowerSection.scrollIntoViewIfNeeded();
