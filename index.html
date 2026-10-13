@@ -243,6 +243,30 @@
       .cp-reveal{opacity:1!important;transform:none!important;transition:none!important}
     }
 
+  
+    /* Mobile performance + refined motion: keep the first screen immediate and scrolling light. */
+    @media (prefers-reduced-motion: no-preference) {
+      .site-header { animation: none; }
+      .hero-copy { animation: cp-soft-enter .58s cubic-bezier(.22,1,.36,1) both; }
+      .hero-visual { animation: cp-soft-enter .62s .04s cubic-bezier(.22,1,.36,1) both; }
+      .hero-bottom { animation: cp-soft-enter .5s .08s cubic-bezier(.22,1,.36,1) both; }
+      .cp-reveal { transition-duration: .38s; }
+    }
+    @media (max-width: 760px) {
+      /* Blur and deep shadows are decorative, but costly on some mobile GPUs. */
+      .site-header { background: rgba(250,248,245,.98); backdrop-filter: none; -webkit-backdrop-filter: none; }
+      .hero:before { width: 360px; height: 360px; right: -190px; top: -130px; }
+      .hero-abcd-panel { box-shadow: 0 8px 24px rgba(29,46,35,.06); }
+      .hero-abcd-tile { box-shadow: 0 2px 8px rgba(29,46,35,.035); }
+      .part-card, .benefit-card, .compare-table tr { box-shadow: 0 2px 10px rgba(29,46,35,.025); }
+      .cp-reveal { transform: translate3d(0,12px,0); transition-duration: .38s; }
+      .carrier-marquee.is-ready .marquee-track { animation-duration: 42s; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .site-header, .hero-copy, .hero-visual, .hero-bottom { animation: none !important; }
+      .cp-reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+    }
+
   </style>
 </head>
 <body>
@@ -354,7 +378,7 @@
     <section id="about" class="section broker broker-section" data-testid="broker-section">
       <div class="wrap broker-grid">
         <div class="broker-photo-wrap">
-          <img class="broker-photo" src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA3MDB8MHwxfHNlYXJjaHwyfHxmcmllbmRseSUyMGluc3VyYW5jZSUyMGJyb2tlciUyMHBvcnRyYWl0fGVufDB8fHx8MTc5MDkxMDUxM3ww&ixlib=rb-4.1.0&q=85" alt="Professional portrait of a broker" loading="lazy">
+          <img class="broker-photo" src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=900&q=72" alt="Professional portrait of a broker" loading="lazy" decoding="async">
           <div class="broker-stamp"><strong>✓ Licensed &amp; Verified</strong><small>Independent Medicare Broker</small></div>
         </div>
         <div>
@@ -391,13 +415,13 @@
           <a class="pill" href="#contact">Compare your options <span aria-hidden="true">→</span></a>
           <div class="feature-aside">Plan benefits, provider networks, premiums, and availability vary by county and plan. Check details before enrolling.</div>
         </div>
-        <img class="feature-image" src="https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzNDR8MHwxfHNlYXJjaHwxfHxkb2N0b3IlMjBjb25zdWx0YXRpb24lMjBzZW5pb3IlMjBwYXRpZW50fGVufDB8fHx8MTc5MDkxMDUxNHww&ixlib=rb-4.1.0&q=85" alt="Doctor discussing coverage options with a senior patient" loading="lazy">
+        <img class="feature-image" src="https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?auto=format&fit=crop&w=900&q=72" alt="Doctor discussing coverage options with a senior patient" loading="lazy" decoding="async">
       </div>
     </section>
 
     <section id="medigap" class="section medigap-section" data-testid="medigap-section">
       <div class="wrap feature-grid">
-        <img class="feature-image" src="https://images.unsplash.com/photo-1761839257647-df30867afd54?crop=entropy&amp;cs=srgb&amp;fm=jpg&amp;ixid=M3w4NjY2NzN8MHwxfHNlYXJjaHwxfHxzZW5pb3IlMjBjb3VwbGUlMjBoYXBweSUyMG91dGRvb3JzfGVufDB8fHx8MTc5MDkxMDUxNHww&amp;ixlib=rb-4.1.0&amp;q=85" alt="Senior couple enjoying retirement with coverage peace of mind" loading="lazy">
+        <img class="feature-image" src="https://images.unsplash.com/photo-1761839257647-df30867afd54?auto=format&amp;fit=crop&amp;w=900&amp;q=72" alt="Senior couple enjoying retirement with coverage peace of mind" loading="lazy" decoding="async">
         <div class="feature-copy">
           <p class="eyebrow">Medicare Supplement — Medigap</p>
           <h2 class="section-title">Fill the gaps in Original Medicare</h2>
