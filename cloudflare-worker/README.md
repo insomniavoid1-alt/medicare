@@ -4,10 +4,10 @@ The public site remains a static HTML page deployed from GitHub Pages. Cloudflar
 
 ## What the editor does
 
-- Shows the **Edit website** button on the page by default; opening the editor and publishing changes requires the editor password.
-- Requires password authentication by default. Do not set `EDITOR_AUTH_MODE=prelaunch` if you want the password prompt enabled.
+- Shows the **Edit website** button on the page by default; editor access is passwordless for pre-launch work.
+- Supports direct text editing, field/placeholder updates, standard image replacement, CSS background-image replacement, and image alt-text updates.
 - Lets the editor click text to edit it and click an image to replace it.
-- Publishes page HTML and image uploads through an authenticated Cloudflare Worker.
+- Publishes page HTML and image uploads through the Cloudflare Worker without a password.
 - Keeps the GitHub token on the Worker, never in the browser.
 - Uses the existing GitHub Actions checks and Pages deployment workflow.
 
@@ -19,16 +19,15 @@ These account-level steps cannot be completed from this repository alone.
 2. Paste/deploy the contents of `cloudflare-worker/medicare-editor.js` as the Worker entry point.
 3. Under the Worker settings, add these **secrets**:
    - `GITHUB_TOKEN`: create a GitHub fine-grained personal access token limited to repository `insomniavoid1-alt/medicare`, with **Contents: Read and write**. Do not use a classic token or grant access to unrelated repositories.
-   - `EDITOR_PASSWORD`: set a long, unique password. Store it in a password manager.
-4. Leave `EDITOR_AUTH_MODE` unset or set it to `secure` to require the password. Do not set it to `prelaunch`, because that disables authentication and lets anyone who can reach the Worker route publish edits.
+4. Passwordless mode is enabled in the committed Worker code. This is intended only for private pre-launch development. Anyone who can reach the Worker route can publish edits; re-enable authentication before the site is public.
 5. Add the plain-text Worker variable `SITE_ORIGIN` with the exact public origin, such as `https://www.example.com` (no trailing slash or path). Use the actual live site's origin, not this example.
 6. In Cloudflare, add a Worker route for the live custom domain and path `/api/*`. Ensure the domain's DNS record is proxied through Cloudflare so the route can run.
 7. Keep the existing GitHub Pages custom-domain configuration. The site's normal page requests continue to be served by GitHub Pages; only `/api/*` is handled by the Worker.
 
 ## First-use checklist
 
-- Visit `https://YOUR-DOMAIN/api/health` only after deployment. With password protection enabled, the editor will ask for the password before proceeding.
-- Open your site normally, choose **Edit website**, then click **Open editor** and enter the password configured in the Cloudflare Worker secret.
+- Visit `https://YOUR-DOMAIN/api/health` only after deployment; it should return editor API status without a password.
+- Open your site normally and choose **Edit website**, then click **Open editor**. Select text, standard images, or inline CSS background images to edit them.
 - Click a short text element and edit it; click an image to upload a replacement; choose **Save & publish**.
 - Confirm the GitHub Actions workflow passes, then check the public page in a fresh tab.
 
@@ -39,4 +38,4 @@ These account-level steps cannot be completed from this repository alone.
 - If a deploy fails, the previous published version normally remains live. Check the Actions run before retrying.
 - This editor is intentionally a small visual content editor, not a full page builder. Editing navigation links, form behavior, scripts, or complex nested elements is not recommended.
 - The existing contact form opens an email app and does not securely store or submit leads to a server.
-- The editor password is a shared secret. Only give it to trusted editors, rotate it if exposed, and keep the GitHub token private.
+- Passwordless mode is not safe for a public website: anyone who can reach the Worker route can change the page or upload images. Before launch, restore authentication and keep the GitHub token private.
