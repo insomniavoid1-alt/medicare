@@ -270,7 +270,6 @@
   (() => {
     'use strict';
     const API_BASE = '/api';
-    let editorPassword = '';
     let editing = false;
     let changedImages = new Map();
     const style = document.createElement('style');
@@ -306,13 +305,10 @@
       if (node) node.textContent = message;
     }
     function renderLogin() {
-      panel.innerHTML = '<h2>ClearPath site editor</h2><p>Private editing access. Enter the editor password configured in Cloudflare. Your password is kept only in this page memory.</p><label for="cp-editor-password">Editor password</label><input id="cp-editor-password" type="password" autocomplete="current-password" placeholder="Enter your private editor password"><div class="actions"><button class="primary" id="cp-editor-connect">Unlock editor</button><button class="secondary" id="cp-editor-close">Close</button></div><p id="cp-editor-status" class="status" role="status" aria-live="polite">Text and image changes are published through the secure Cloudflare Worker.</p>';
+      panel.innerHTML = '<h2>ClearPath site editor</h2><p>Pre-launch editing mode. Click below to open the editor, then select text or images on the page.</p><div class="actions"><button class="primary" id="cp-editor-connect">Open editor</button><button class="secondary" id="cp-editor-close">Close</button></div><p id="cp-editor-status" class="status" role="status" aria-live="polite">Publishing uses the configured Cloudflare Worker.</p>';
       panel.querySelector('#cp-editor-connect').addEventListener('click', async () => {
-        const password = panel.querySelector('#cp-editor-password').value;
-        if (!password) { status('Enter your editor password.'); return; }
         const button = panel.querySelector('#cp-editor-connect');
         button.disabled = true;
-        editorPassword = password;
         try {
           await apiRequest('/health', {method:'GET'});
           editing = true;
@@ -321,8 +317,7 @@
           launch.hidden = true;
           renderEditor();
         } catch (error) {
-          editorPassword = '';
-          status('Could not unlock: ' + error.message + '. Check the Cloudflare Worker route and configuration.');
+          status('Could not open editor: ' + error.message + '. Confirm the Cloudflare Worker is deployed and EDITOR_AUTH_MODE is set to prelaunch while the site is not public.');
         } finally {
           const b = panel.querySelector('#cp-editor-connect');
           if (b) b.disabled = false;
@@ -332,7 +327,7 @@
     }
     async function apiRequest(path, options) {
       const opts = Object.assign({method:'POST'}, options || {});
-      opts.headers = Object.assign({'Content-Type':'application/json','Authorization':'Bearer ' + editorPassword}, opts.headers || {});
+      opts.headers = Object.assign({'Content-Type':'application/json'}, opts.headers || {});
       const response = await fetch(API_BASE + path, opts);
       const result = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(result.error || 'Request failed (' + response.status + ')');
@@ -349,7 +344,6 @@
     function closePanel() { panel.hidden = true; launch.hidden = false; }
     function exitEditor() {
       editing = false;
-      editorPassword = '';
       changedImages.clear();
       document.body.classList.remove('cp-editing');
       document.querySelectorAll('[contenteditable="true"]').forEach(el => el.removeAttribute('contenteditable'));
@@ -421,7 +415,6 @@
         status('Publishing your changes…');
         const result = await apiRequest('/publish',{body:JSON.stringify({html})});
         status(result.message || 'Changes published to the deployment pipeline.');
-        editorPassword = '';
         setTimeout(() => {
           if (confirm('Your changes were submitted. Reload this page to check the deployed version?')) location.reload();
         },1200);
