@@ -6,11 +6,19 @@
   <meta name="theme-color" content="#faf8f5">
   <script>
     (() => {
-      if (!('scrollRestoration' in history)) return;
-      const navigation = performance.getEntriesByType('navigation')[0];
-      const freshEntry = !location.hash && (!navigation || navigation.type === 'navigate' || navigation.type === 'reload');
-      history.scrollRestoration = freshEntry ? 'manual' : 'auto';
-      if (freshEntry) window.scrollTo(0, 0);
+      if ('scrollRestoration' in history && !location.hash) history.scrollRestoration = 'manual';
+      const resetFreshPage = () => {
+        if (location.hash) return;
+        const root = document.documentElement;
+        const previousBehavior = root.style.scrollBehavior;
+        root.style.scrollBehavior = 'auto';
+        window.scrollTo(0, 0);
+        requestAnimationFrame(() => {
+          window.scrollTo(0, 0);
+          root.style.scrollBehavior = previousBehavior;
+        });
+      };
+      window.addEventListener('pageshow', resetFreshPage, { once: true });
     })();
   </script>
   <meta name="description" content="Independent Medicare guidance in plain English. Understand Parts A, B, C and D, Medicare Advantage, and Medigap with Michael Dovsky, Independent Medicare Broker.">
@@ -98,18 +106,17 @@
       .hero-copy { animation: cp-soft-enter 1.25s .08s cubic-bezier(.22,1,.36,1) both; }
       .hero-visual { animation: cp-soft-enter 1.3s .16s cubic-bezier(.22,1,.36,1) both; }
       .hero-bottom { animation: cp-soft-enter 1.1s .22s cubic-bezier(.22,1,.36,1) both; }
-      .cp-reveal {
+      html.cp-motion-ready .cp-reveal {
         opacity: 0;
         transform: translate3d(0, 24px, 0);
         transition: opacity 1.15s cubic-bezier(.22,1,.36,1), transform 1.15s cubic-bezier(.22,1,.36,1);
         transition-delay: var(--cp-reveal-delay, 0ms);
       }
-      .cp-reveal-left, .cp-reveal-right { transform: translate3d(0, 24px, 0); }
-      .cp-reveal.cp-visible { opacity: 1; transform: translate3d(0, 0, 0); }
+      html.cp-motion-ready .cp-reveal.cp-visible { opacity: 1; transform: translate3d(0, 0, 0); }
       .pill, .contact-link, .part-card, .hero-abcd-tile { transition-timing-function: cubic-bezier(.22,1,.36,1); }
     }
     @media (prefers-reduced-motion: reduce) {
-      .cp-reveal, .cp-reveal-left, .cp-reveal-right { opacity: 1 !important; transform: none !important; transition: none !important; }
+      html.cp-motion-ready .cp-reveal, .cp-reveal, .cp-reveal-left, .cp-reveal-right { opacity: 1 !important; transform: none !important; transition: none !important; }
     }
 
   
@@ -594,32 +601,43 @@
 
   <script id="cp-professional-motion">
   (function () {
-    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduce || !('IntersectionObserver' in window)) return;
+    var motionPreference = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
+    if ((motionPreference && motionPreference.matches) || !('IntersectionObserver' in window)) return;
 
     var desktop = window.matchMedia('(min-width: 761px)').matches;
-    /* Desktop restores the original detailed page-wide entrance/reveal sequence.
-       Mobile keeps fewer, larger targets to avoid nested transform conflicts. */
+    /* Animate independent layout blocks only: nested reveal transforms caused
+       competing opacity/transform transitions and made debugging unreliable. */
     var desktopTargets = [
-      '.section-heading', '.section-heading > *',
+      '.section-heading',
       '.broker-photo-wrap',
-      '.broker-grid h2', '.broker-grid h3', '.broker-grid p',
-      '.broker-grid .contact-link', '.broker-grid .broker-note',
-      '.part-card', '.part-card > *',
-      '.hero-abcd-tile', '.hero-abcd-heading > *', '.hero-abcd-note',
-      '.benefit-card', '.benefit-card > *',
-      '.feature-grid .feature-image', '.feature-copy > *',
-      '.feature-list li', '.plan-chips span',
-      '.compare-table-wrap', '.compare-table tr', '.compare-footnote',
-      '.contact-copy > *', '.contact-reasons > *',
-      '.lead-card > *', '.lead-card .field',
-      '.footer-grid > *', '.footer-grid p', '.footer-grid a', '.footer-bottom > *'
+      '.broker-grid > div',
+      '.part-card',
+      '.hero-abcd-tile',
+      '.hero-abcd-heading',
+      '.hero-abcd-note',
+      '.benefit-card',
+      '.feature-grid > .feature-image',
+      '.feature-copy > .eyebrow',
+      '.feature-copy > .section-title',
+      '.feature-copy > p',
+      '.feature-copy > .benefit-cards',
+      '.feature-copy > .plan-chips',
+      '.feature-copy > .feature-aside',
+      '.feature-copy > .pill',
+      '.compare-table-wrap',
+      '.compare-footnote',
+      '.contact-copy > *',
+      '.contact-reasons > div',
+      '.lead-card',
+      '.footer-grid > div',
+      '.footer-bottom'
     ].join(', ');
     var mobileTargets =
       '.section-heading, .broker-photo-wrap, .part-card, .benefit-card, ' +
       '.feature-grid > .feature-image, .feature-copy, .compare-table-wrap, ' +
       '.contact-reasons > div, .lead-card, .footer-grid > div';
-    var targets = document.querySelectorAll(desktop ? desktopTargets : mobileTargets);
+
+    var targets = Array.prototype.slice.call(document.querySelectorAll(desktop ? desktopTargets : mobileTargets));
     if (!targets.length) return;
 
     var grouped = new Map();
@@ -627,34 +645,32 @@
       el.classList.add('cp-reveal');
       var parent = el.parentElement || document.body;
       var count = grouped.get(parent) || 0;
-      el.style.setProperty('--cp-reveal-delay', Math.min(count, desktop ? 5 : 3) * (desktop ? 65 : 55) + 'ms');
+      el.style.setProperty('--cp-reveal-delay', Math.min(count, desktop ? 4 : 2) * (desktop ? 75 : 55) + 'ms');
       grouped.set(parent, count + 1);
     });
 
     var observer = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('cp-visible');
-          observer.unobserve(entry.target);
-        }
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('cp-visible');
+        observer.unobserve(entry.target);
       });
     }, { rootMargin: '0px 0px -3% 0px', threshold: 0.04 });
 
     targets.forEach(function (el) {
-      if (desktop) {
-        /* Desktop deliberately lets the observer animate visible-at-load content
-           as well as off-screen content, matching the last known-good choreography. */
-        observer.observe(el);
-        return;
+      if (!desktop) {
+        var rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight * 0.92 && rect.bottom > 0) {
+          el.classList.add('cp-visible');
+          return;
+        }
       }
-      /* Mobile avoids an unnecessary first-paint flash for already-visible blocks. */
-      var rect = el.getBoundingClientRect();
-      if (rect.top < window.innerHeight * 0.92 && rect.bottom > 0) {
-        el.classList.add('cp-visible');
-      } else {
-        observer.observe(el);
-      }
+      observer.observe(el);
     });
+
+    /* Hidden reveal styling is enabled only after the observer is fully wired.
+       If initialization fails earlier, page content remains visible by default. */
+    document.documentElement.classList.add('cp-motion-ready');
   })();
   </script>
 
