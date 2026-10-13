@@ -414,26 +414,18 @@
       panel.querySelector('#cp-editor-connect').addEventListener('click', async () => {
         const button = panel.querySelector('#cp-editor-connect');
         button.disabled = true;
-        status('Checking the editor service…');
-        try {
-          await apiRequest('/health', {method:'GET'});
-          editing = true;
-          changedImages = new Map();
-          originalValues = new Map();
-          document.body.classList.add('cp-editing');
-          launch.hidden = true;
-          renderEditor();
-        } catch (error) {
-          status('Could not open editor: ' + error.message + '. Confirm the Worker is deployed, its /api/* route is configured, and SITE_ORIGIN matches this website.');
-        } finally {
-          const b = panel.querySelector('#cp-editor-connect');
-          if (b) b.disabled = false;
-        }
+        status('Opening the on-page editor…');
+        editing = true;
+        changedImages = new Map();
+        originalValues = new Map();
+        document.body.classList.add('cp-editing');
+        launch.hidden = true;
+        renderEditor();
       });
       panel.querySelector('#cp-editor-close').addEventListener('click', closePanel);
     }
     function renderEditor() {
-      panel.innerHTML = '<h2>Website editor</h2><p>Click any visible text to edit that text block. Click an image or image-backed area to replace it. Edit labels and image descriptions below when selected. Use Save &amp; publish to commit changes.</p><div class="actions"><button class="primary" id="cp-editor-publish">Save &amp; publish</button><button class="secondary" id="cp-editor-discard">Discard &amp; reload</button><button class="secondary" id="cp-editor-exit">Exit editor</button></div><p id="cp-editor-selection">Nothing selected yet.</p><label for="cp-editor-alt">Selected image description (alt text)</label><input id="cp-editor-alt" type="text" placeholder="Describe the image for accessibility"><div class="actions"><button class="secondary" id="cp-editor-save-alt">Apply image description</button><button class="secondary" id="cp-editor-replace-image">Replace selected image</button></div><p id="cp-editor-status" class="status" role="status" aria-live="polite">Editor ready. Click a text element or image on the page.</p>';
+      panel.innerHTML = '<h2>Website editor</h2><p>Click any text, heading, label, or button text on the page to edit it directly. Click an image to replace it. Saving requires the website's publishing service to be configured.</p><div class="actions"><button class="primary" id="cp-editor-publish">Save &amp; publish</button><button class="secondary" id="cp-editor-discard">Discard &amp; reload</button><button class="secondary" id="cp-editor-exit">Exit editor</button></div><p id="cp-editor-selection">Nothing selected yet.</p><label for="cp-editor-alt">Selected image description (alt text)</label><input id="cp-editor-alt" type="text" placeholder="Describe the image for accessibility"><div class="actions"><button class="secondary" id="cp-editor-save-alt">Apply image description</button><button class="secondary" id="cp-editor-replace-image">Replace selected image</button></div><p id="cp-editor-status" class="status" role="status" aria-live="polite">Editor ready. Click a text element or image on the page.</p>';
       panel.querySelector('#cp-editor-publish').addEventListener('click', publish);
       panel.querySelector('#cp-editor-discard').addEventListener('click', () => {
         if (confirm('Discard all unsaved page edits and reload? Uploaded files already sent to the repository may remain unused.')) location.reload();
@@ -467,6 +459,10 @@
     }
     function findTextTarget(startEl) {
       let el = startEl instanceof Element ? startEl : null;
+      if (!el || isExcluded(el)) return null;
+      const textTags = 'span,strong,em,b,i,small,mark,abbr,p,h1,h2,h3,h4,h5,h6,a,button,label,li,dt,dd,figcaption,blockquote,td,th,legend,summary';
+      let candidate = el.closest(textTags);
+      if (candidate && !isExcluded(candidate) && candidate.textContent.trim()) return candidate;
       while (el && el !== document.body) {
         if (isExcluded(el)) return null;
         if (el.matches('input,textarea,select')) return el;
