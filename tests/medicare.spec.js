@@ -5,7 +5,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('renders Michael Dovsky branding and all main page sections', async ({ page }) => {
-  await expect(page).toHaveTitle(/Michael Dovsky \| Independent Medicare Broker/);
+  await expect(page).toHaveTitle(/Find the Right Plan \| Medicare Guidance with Michael Dovsky/);
   await expect(page.getByTestId('hero-section')).toBeVisible();
   await expect(page.getByTestId('hero-kicker')).toHaveText('Independent Medicare Broker');
   await expect(page.getByRole('heading', { name: /Medicare, explained in plain English/i, level: 1 })).toBeVisible();
@@ -182,4 +182,49 @@ test('images have alternative text and mobile layout does not overflow horizonta
     expect(narrow.content).toBeLessThanOrEqual(narrow.viewport + 1);
     expect(narrow.brand + narrow.cta + narrow.toggle).toBeLessThanOrEqual(narrow.viewport);
   }
+});
+test('Enhanced Visuals controls are discoverable, keyboard-operable, and preserve independent settings', async ({ page }) => {
+  const trigger = page.getByTestId('enhanced-visuals-toggle');
+  await expect(trigger).toBeVisible();
+  await expect(trigger).toHaveText('ENHANCED VISUALS');
+  await trigger.focus();
+  await expect(trigger).toBeFocused();
+  await trigger.press('Enter');
+  await expect(trigger).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('region', { name: 'Enhanced Visuals' })).toBeVisible();
+  await expect(page.getByRole('status')).toContainText('Easy Read is on');
+  await page.getByLabel('Theme').selectOption('dark');
+  await page.getByLabel('Text size').selectOption('large');
+  await page.getByRole('button', { name: 'Turn Off Easy Read' }).click();
+  await expect(trigger).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.locator('html')).toHaveClass(/ev-theme-dark/);
+  await expect(page.locator('html')).toHaveClass(/ev-text-large/);
+  await expect(page.locator('html')).not.toHaveClass(/ev-easy-read/);
+  await page.reload();
+  await expect(page.locator('html')).toHaveClass(/ev-theme-dark/);
+  await expect(page.locator('html')).toHaveClass(/ev-text-large/);
+});
+
+test('Enhanced Visuals settings do not clear contact form entries and reset only preferences', async ({ page }) => {
+  await page.getByLabel('Full name').fill('Test Visitor');
+  await page.getByLabel('Phone number').fill('7605550123');
+  await page.getByLabel('Email address').fill('visitor@example.com');
+  await page.getByTestId('enhanced-visuals-toggle').click();
+  await page.getByLabel('Theme').selectOption('dark');
+  await page.getByLabel('Text size').selectOption('maximum');
+  await page.getByRole('button', { name: 'Reset preferences' }).click();
+  await expect(page.getByLabel('Full name')).toHaveValue('Test Visitor');
+  await expect(page.getByLabel('Phone number')).toHaveValue('7605550123');
+  await expect(page.getByLabel('Email address')).toHaveValue('visitor@example.com');
+  await expect(page.locator('html')).not.toHaveClass(/ev-theme-dark/);
+  await expect(page.locator('html')).not.toHaveClass(/ev-text-maximum/);
+});
+
+test('Enhanced Visuals supports high contrast and reduced motion without removing existing motion code', async ({ page }) => {
+  await page.getByTestId('enhanced-visuals-toggle').click();
+  await page.getByLabel('Contrast').selectOption('high');
+  await page.getByLabel('Motion').selectOption('reduced');
+  await expect(page.locator('html')).toHaveClass(/ev-high-contrast/);
+  await expect(page.locator('html')).toHaveClass(/ev-motion-reduced/);
+  await expect(page.locator('#cp-professional-motion')).toBeAttached();
 });
