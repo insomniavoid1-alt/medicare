@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#faf8f5">
   <script>
+    /* Arm the entrance before first paint, then start it after the browser has painted once. */
+    document.documentElement.classList.add('cp-entrance-pending');
+    window.setTimeout(() => document.documentElement.classList.remove('cp-entrance-pending'), 1800);
+  </script>
+  <script>
     (() => {
       const navigation = performance.getEntriesByType('navigation')[0];
       const freshEntry = !navigation || navigation.type === 'navigate' || navigation.type === 'reload';
@@ -104,10 +109,17 @@
       from { opacity: 0; transform: translate3d(0, 14px, 0); }
       to { opacity: 1; transform: translate3d(0, 0, 0); }
     }
-    .site-header { animation: cp-soft-enter 1.15s cubic-bezier(.22,1,.36,1) both; }
-    .hero-copy { animation: cp-soft-enter 1.25s .08s cubic-bezier(.22,1,.36,1) both; }
-    .hero-visual { animation: cp-soft-enter 1.3s .16s cubic-bezier(.22,1,.36,1) both; }
-    .hero-bottom { animation: cp-soft-enter 1.1s .22s cubic-bezier(.22,1,.36,1) both; }
+    /* Keep content hidden only during the short pre-paint arm phase; start motion after first paint. */
+    @media (min-width: 761px) {
+      html.cp-entrance-pending:not(.cp-entrance-ready) .site-header,
+      html.cp-entrance-pending:not(.cp-entrance-ready) .hero-copy,
+      html.cp-entrance-pending:not(.cp-entrance-ready) .hero-visual,
+      html.cp-entrance-pending:not(.cp-entrance-ready) .hero-bottom { opacity: 0; }
+      html.cp-entrance-ready .site-header { animation: cp-soft-enter 1.15s cubic-bezier(.22,1,.36,1) both; }
+      html.cp-entrance-ready .hero-copy { animation: cp-soft-enter 1.25s .08s cubic-bezier(.22,1,.36,1) both; }
+      html.cp-entrance-ready .hero-visual { animation: cp-soft-enter 1.3s .16s cubic-bezier(.22,1,.36,1) both; }
+      html.cp-entrance-ready .hero-bottom { animation: cp-soft-enter 1.1s .22s cubic-bezier(.22,1,.36,1) both; }
+    }
 
     /* Desktop hero choreography: animate each headline row and supporting text
        independently. Animating .hero-copy as one block made every line arrive
@@ -119,25 +131,25 @@
     /* Keep the desktop entrance available in browsers that do not recognize the no-preference query. */
     /* The explicit reduced-motion rules below still disable motion for users who request it. */
     @media (min-width: 761px) {
-      .hero-copy { animation: none; }
-      .hero-copy > .eyebrow {
+      html.cp-entrance-ready .hero-copy { animation: none; }
+      html.cp-entrance-ready .hero-copy > .eyebrow {
         animation: cp-soft-enter .72s .04s cubic-bezier(.22,1,.36,1) both;
       }
-      .hero-copy > h1 > span,
-      .hero-copy > h1 > em {
+      html.cp-entrance-ready .hero-copy > h1 > span,
+      html.cp-entrance-ready .hero-copy > h1 > em {
         display: inline-block;
         animation: cp-line-enter .88s cubic-bezier(.22,1,.36,1) both;
       }
-      .hero-copy > h1 > span:nth-of-type(1) { animation-delay: .13s; }
-      .hero-copy > h1 > span:nth-of-type(2) { animation-delay: .29s; }
-      .hero-copy > h1 > em { animation-delay: .45s; }
-      .hero-copy > .hero-lede {
+      html.cp-entrance-ready .hero-copy > h1 > span:nth-of-type(1) { animation-delay: .13s; }
+      html.cp-entrance-ready .hero-copy > h1 > span:nth-of-type(2) { animation-delay: .29s; }
+      html.cp-entrance-ready .hero-copy > h1 > em { animation-delay: .45s; }
+      html.cp-entrance-ready .hero-copy > .hero-lede {
         animation: cp-soft-enter .82s .58s cubic-bezier(.22,1,.36,1) both;
       }
-      .hero-copy > .hero-actions {
+      html.cp-entrance-ready .hero-copy > .hero-actions {
         animation: cp-soft-enter .82s .7s cubic-bezier(.22,1,.36,1) both;
       }
-      .hero-copy > .trust-row {
+      html.cp-entrance-ready .hero-copy > .trust-row {
         animation: cp-soft-enter .82s .82s cubic-bezier(.22,1,.36,1) both;
       }
     }
@@ -636,7 +648,26 @@
   
 
 
-  <script id="cp-professional-motion">
+  <script id="cp-entrance-start">
+    (function () {
+      var root = document.documentElement;
+      var start = function () {
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            root.classList.add('cp-entrance-ready');
+            root.classList.remove('cp-entrance-pending');
+          });
+        });
+      };
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', start, { once: true });
+      } else {
+        start();
+      }
+    })();
+  </script>
+
+    <script id="cp-professional-motion">
   (function () {
     var motionPreference = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
     if ((motionPreference && motionPreference.matches) || !('IntersectionObserver' in window)) return;
