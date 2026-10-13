@@ -67,6 +67,8 @@ jobs:
           cp index.html site/index.html
           # Serve the same single-page site as a fallback for Pages 404s.
           cp index.html site/404.html
+          # Include uploaded images when the visual editor has added any.
+          if [ -d assets ]; then cp -R assets site/assets; fi
           touch site/.nojekyll
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
