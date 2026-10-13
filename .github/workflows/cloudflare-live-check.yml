@@ -2,7 +2,7 @@ name: Cloudflare live-site verification
 
 on:
   workflow_run:
-    workflows: ["Medicare site checks and Pages deployment"]
+    workflows: ["Medicare site checks for Cloudflare Pages"]
     branches: [main]
     types: [completed]
   workflow_dispatch:
@@ -19,7 +19,7 @@ jobs:
       - name: Check out current main
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.event_name == 'workflow_dispatch' && 'main' || github.event.workflow_run.head_sha }}
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
@@ -32,24 +32,33 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          set -euo pipefail
           url="https://medicare-6pj.pages.dev/"
           ready=0
+          expected_sha="$(sha256sum index.html | awk '{print $1}')"
+          echo "Expected source commit: $GITHUB_SHA"
+          echo "Expected index.html SHA-256: $expected_sha"
           for attempt in $(seq 1 30); do
             if curl --fail --silent --show-error --location "$url" -o /tmp/cloudflare.html \
-              && grep -q '<title>Michael Dovsky | Independent Medicare Broker</title>' /tmp/cloudflare.html \
-              && grep -q 'cp-soft-enter' /tmp/cloudflare.html \
-              && grep -q 'cp-reveal' /tmp/cloudflare.html; then
+              && cmp -s index.html /tmp/cloudflare.html; then
               ready=1
-              echo "Cloudflare serves the expected page and animation hooks (attempt $attempt)."
+              actual_sha="$(sha256sum /tmp/cloudflare.html | awk '{print $1}')"
+              echo "Cloudflare serves the exact index.html from the checked-out source commit (attempt $attempt)."
+              echo "Verified live SHA-256: $actual_sha"
               break
             fi
-            echo "Cloudflare not ready or expected animation hooks absent (attempt $attempt/30); waiting 20 seconds."
+            actual_sha="unavailable"
+            if [ -f /tmp/cloudflare.html ]; then actual_sha="$(sha256sum /tmp/cloudflare.html | awk '{print $1}')"; fi
+            echo "Cloudflare has not published the exact expected HTML yet (attempt $attempt/30); expected=$expected_sha actual=$actual_sha. Waiting 20 seconds."
             sleep 20
           done
           if [ "$ready" -ne 1 ]; then
-            echo "::error::Cloudflare did not serve the expected page and animation hooks within 10 minutes."
+            echo "::error::Cloudflare did not serve the exact index.html from the checked-out commit within 10 minutes. Check Cloudflare Pages production branch/build configuration and deployments."
             exit 1
           fi
+          grep -q '<title>Michael Dovsky | Independent Medicare Broker</title>' /tmp/cloudflare.html
+          grep -q 'cp-soft-enter' /tmp/cloudflare.html
+          grep -q 'cp-reveal' /tmp/cloudflare.html
       - name: Verify live desktop animation actually progresses in Chromium
         env:
           LIVE_URL: https://medicare-6pj.pages.dev/
