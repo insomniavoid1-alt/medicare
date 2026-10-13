@@ -53,7 +53,13 @@ async function github(path, env, options = {}) {
   if (!response.ok) throw new Error(result.message || "GitHub request failed (" + response.status + ")");
   return result;
 }
+function authRequired(env) {
+  // Set EDITOR_AUTH_MODE=prelaunch only while the site is private and in development.
+  // The default is secure: authentication is required unless explicitly disabled.
+  return env.EDITOR_AUTH_MODE !== "prelaunch";
+}
 function checkAuth(request, env) {
+  if (!authRequired(env)) return true;
   return Boolean(env.EDITOR_PASSWORD) &&
     request.headers.get("Authorization") === "Bearer " + env.EDITOR_PASSWORD;
 }
