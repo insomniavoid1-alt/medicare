@@ -598,10 +598,8 @@
     if (reduce || !('IntersectionObserver' in window)) return;
 
     var desktop = window.matchMedia('(min-width: 761px)').matches;
-
-    /* Restore the richer desktop choreography from the pre-mobile-refinement
-       implementation. Keep the mobile target set deliberately coarse to avoid
-       nested transforms and conflicts with the mobile hero-tile animations. */
+    /* Desktop restores the original detailed page-wide entrance/reveal sequence.
+       Mobile keeps fewer, larger targets to avoid nested transform conflicts. */
     var desktopTargets = [
       '.section-heading', '.section-heading > *',
       '.broker-photo-wrap',
@@ -617,11 +615,10 @@
       '.lead-card > *', '.lead-card .field',
       '.footer-grid > *', '.footer-grid p', '.footer-grid a', '.footer-bottom > *'
     ].join(', ');
-    var mobileTargets = [
+    var mobileTargets =
       '.section-heading, .broker-photo-wrap, .part-card, .benefit-card, ' +
       '.feature-grid > .feature-image, .feature-copy, .compare-table-wrap, ' +
-      '.contact-reasons > div, .lead-card, .footer-grid > div'
-    ].join('');
+      '.contact-reasons > div, .lead-card, .footer-grid > div';
     var targets = document.querySelectorAll(desktop ? desktopTargets : mobileTargets);
     if (!targets.length) return;
 
@@ -644,8 +641,13 @@
     }, { rootMargin: '0px 0px -3% 0px', threshold: 0.04 });
 
     targets.forEach(function (el) {
-      /* Avoid hiding content that is already visible at first paint; all
-         off-screen content still uses the original observer-driven reveal. */
+      if (desktop) {
+        /* Desktop deliberately lets the observer animate visible-at-load content
+           as well as off-screen content, matching the last known-good choreography. */
+        observer.observe(el);
+        return;
+      }
+      /* Mobile avoids an unnecessary first-paint flash for already-visible blocks. */
       var rect = el.getBoundingClientRect();
       if (rect.top < window.innerHeight * 0.92 && rect.bottom > 0) {
         el.classList.add('cp-visible');
