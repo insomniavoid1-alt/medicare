@@ -59,6 +59,29 @@
 
 
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}}
+  
+    /* Calm, polished entrance motion: restrained opacity and small transforms only. */
+    @keyframes cp-soft-enter {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .site-header { animation: cp-soft-enter .55s cubic-bezier(.2,.7,.2,1) both; }
+      .hero-copy { animation: cp-soft-enter .7s .08s cubic-bezier(.2,.7,.2,1) both; }
+      .hero-visual { animation: cp-soft-enter .8s .18s cubic-bezier(.2,.7,.2,1) both; }
+      .hero-bottom { animation: cp-soft-enter .55s .25s cubic-bezier(.2,.7,.2,1) both; }
+      .cp-reveal {
+        opacity: 0;
+        transform: translateY(14px);
+        transition: opacity .55s cubic-bezier(.2,.7,.2,1), transform .55s cubic-bezier(.2,.7,.2,1);
+      }
+      .cp-reveal.cp-visible { opacity: 1; transform: translateY(0); }
+      .part-card.cp-reveal:nth-child(2) { transition-delay: .06s; }
+      .part-card.cp-reveal:nth-child(3) { transition-delay: .12s; }
+      .part-card.cp-reveal:nth-child(4) { transition-delay: .18s; }
+      .pill, .contact-link, .part-card { transition-timing-function: cubic-bezier(.2,.7,.2,1); }
+    }
+
   </style>
 </head>
 <body>
@@ -516,6 +539,28 @@
         if (b) b.disabled = false;
       }
     }
+  })();
+  </script>
+
+
+  <script id="cp-professional-motion">
+  (function () {
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce || !('IntersectionObserver' in window)) return;
+    var targets = document.querySelectorAll(
+      '.section-heading, .broker-photo-wrap, .broker-grid > *, .part-card, .feature-grid > *, .compare-table-wrap, .contact-grid > *, .footer-grid > *'
+    );
+    if (!targets.length) return;
+    targets.forEach(function (el) { el.classList.add('cp-reveal'); });
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('cp-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { rootMargin: '0px 0px -7% 0px', threshold: 0.08 });
+    targets.forEach(function (el) { observer.observe(el); });
   })();
   </script>
 
