@@ -376,11 +376,60 @@
     }
 
 
-</style>
+
+/* Enhanced Visuals: additive accessibility layer; base layout and motion remain intact. */
+.ev-trigger{order:-1;flex:0 0 auto;min-height:48px;padding:10px 13px;border:1px solid #0f5132;border-radius:999px;background:#fff;color:#0f5132;font-size:12px;font-weight:850;letter-spacing:.035em;line-height:1.25;white-space:normal}
+.ev-trigger:hover,.ev-trigger[aria-pressed="true"]{background:#0f5132;color:#fff}
+.ev-trigger:focus-visible,.ev-panel button:focus-visible,.ev-panel select:focus-visible,.ev-close:focus-visible{outline:3px solid #d4af37;outline-offset:3px}
+.ev-panel{position:fixed;z-index:100;top:calc(82px + 10px);left:max(12px,calc((100vw - var(--content))/2));width:min(390px,calc(100vw - 24px));max-height:calc(100dvh - 110px);overflow:auto;padding:22px;background:#fff;color:#202820;border:2px solid #0f5132;border-radius:18px;box-shadow:0 18px 55px rgba(0,0,0,.22)}
+.ev-panel[hidden]{display:none}
+.ev-panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.ev-panel-head h2{margin:5px 0 0;font-family:var(--serif);font-size:28px;font-weight:400;line-height:1.2}
+.ev-close{width:44px;height:44px;border:1px solid #c9d4ca;border-radius:50%;background:#fff;color:#202820;font-size:28px}
+.ev-intro{margin:12px 0 18px;font-size:16px;line-height:1.6}
+.ev-setting{display:grid;grid-template-columns:1fr 1.15fr;align-items:center;gap:12px;margin:12px 0}
+.ev-setting label{font-size:16px;font-weight:750}
+.ev-setting select{width:100%;min-height:48px;padding:9px 10px;border:1px solid #68756b;border-radius:9px;background:#fff;color:#202820;font-size:16px}
+.ev-panel-actions{display:grid;gap:10px;margin-top:18px}
+.ev-panel-actions .pill{min-height:48px;font-size:16px}
+.ev-status{min-height:1.5em;margin:12px 0 0;font-size:15px;line-height:1.5}
+html.ev-text-large body{font-size:1.08em}
+html.ev-text-extra-large body{font-size:1.18em}
+html.ev-text-maximum body{font-size:1.3em}
+html.ev-text-large :is(p,li,label,input,textarea,select,button,.part-sub,.part-card ul,.compare-table th,.compare-table td,.section-intro,.hero-lede,.broker-copy,.feature-copy p,.feature-list li,.disclosure,.form-disclaimer){font-size:max(1em,18px)}
+html.ev-text-extra-large :is(p,li,label,input,textarea,select,button,.part-sub,.part-card ul,.compare-table th,.compare-table td,.section-intro,.hero-lede,.broker-copy,.feature-copy p,.feature-list li,.disclosure,.form-disclaimer){font-size:max(1em,21px)}
+html.ev-text-maximum :is(p,li,label,input,textarea,select,button,.part-sub,.part-card ul,.compare-table th,.compare-table td,.section-intro,.hero-lede,.broker-copy,.feature-copy p,.feature-list li,.disclosure,.form-disclaimer){font-size:max(1em,24px)}
+html.ev-easy-read body{letter-spacing:.01em;line-height:1.75}
+html.ev-easy-read :is(p,li,.section-intro,.hero-lede,.broker-copy,.feature-copy p,.feature-list li,.part-card ul,.compare-table th,.compare-table td,.disclosure){line-height:1.75}
+html.ev-easy-read :is(.section-title,.feature-copy h2,.broker h2){line-height:1.3;letter-spacing:0}
+html.ev-easy-read .wrap{width:min(var(--content),calc(100% - 40px))}
+html.ev-theme-dark{color-scheme:dark;--paper:#171b18;--paper2:#202722;--white:#222923;--ink:#f4f6f2;--muted:#d0d8d0;--green-pale:#263b2d;--line:#465249;--shadow:0 18px 50px rgba(0,0,0,.32)}
+html.ev-theme-dark body,html.ev-theme-dark .hero,html.ev-theme-dark .parts-section,html.ev-theme-dark .medigap-section{background:var(--paper);color:var(--ink)}
+html.ev-theme-dark :is(.site-header,.broker,.feature-section,.contact-section,.part-card,.lead-card,.compare-table-wrap,.compare-table,.compare-table thead th,.ev-panel){background:#202722;color:#f4f6f2}
+html.ev-theme-dark :is(.section-title,.hero h1,.broker h2,.feature-copy h2,.part-card h3,.compare-table th,.compare-table td,.field label,.lead-card h3){color:#f4f6f2}
+html.ev-theme-dark :is(p,.hero-lede,.section-intro,.broker-copy,.feature-copy p,.feature-list li,.part-card ul,.part-card .part-sub,.compare-table tbody td,.compare-table tbody th){color:#d0d8d0}
+html.ev-theme-dark :is(.field input,.field textarea,.ev-setting select){background:#171b18;color:#fff;border-color:#718074}
+html.ev-theme-dark .ev-panel{border-color:#8bb69a}
+html.ev-theme-dark .ev-close{background:#171b18;color:#fff;border-color:#718074}
+html.ev-theme-dark .compare-section{background:#171b18}
+html.ev-theme-dark .site-footer{background:#09170f}
+html.ev-high-contrast{--ink:#000;--muted:#252525;--line:#4a4a4a;--green:#00401f;--green2:#002d15}
+html.ev-high-contrast body,html.ev-high-contrast .hero,html.ev-high-contrast .parts-section,html.ev-high-contrast .medigap-section{color:#000}
+html.ev-high-contrast :is(p,.hero-lede,.section-intro,.broker-copy,.feature-copy p,.part-card ul,.compare-table td,.disclosure,.form-disclaimer){color:#171717}
+html.ev-high-contrast :is(a,button,.pill,.text-link){text-decoration-thickness:2px}
+html.ev-high-contrast :is(.part-card,.lead-card,.compare-table-wrap,.field input,.field textarea){border:2px solid #252525}
+html.ev-motion-reduced *,html.ev-motion-reduced *::before,html.ev-motion-reduced *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+@media(max-width:760px){.ev-trigger{max-width:132px;min-height:46px;padding:8px 10px;font-size:11px}.ev-panel{top:82px;left:12px}.header-inner{gap:9px}.brand{min-width:0}.brand-name{white-space:nowrap}}
+@media(max-width:420px){.ev-trigger{max-width:108px;font-size:10px;padding:7px 8px}.brand-name{font-size:14px}}
+@media(prefers-reduced-motion:reduce){html:not(.ev-motion-standard) * ,html:not(.ev-motion-standard) *::before,html:not(.ev-motion-standard) *::after{scroll-behavior:auto}}
+
+  </style>
 </head>
 <body>
   <header class="site-header">
     <div class="wrap header-inner">
+      <button type="button" class="ev-trigger" id="ev-trigger" aria-pressed="false" aria-controls="ev-panel" data-testid="enhanced-visuals-toggle">ENHANCED VISUALS</button>
+
       <a class="brand" href="#top" aria-label="Michael Dovsky home">
         <svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true"><rect width="48" height="48" rx="12" fill="#0F5132"/><path d="M9 35 C17 35 17 18 25 18 S36 16 36 12" stroke="#FAF8F5" stroke-width="3.5" fill="none" stroke-linecap="round"/><circle cx="36" cy="12" r="3.4" fill="#D4AF37"/></svg>
         <span><p class="brand-name">Michael Dovsky</p><p class="brand-sub">Independent Broker</p></span>
@@ -396,6 +445,36 @@
       <button data-scroll="parts">Medicare Parts</button><button data-scroll="advantage">Advantage</button><button data-scroll="medigap">Medigap</button><button data-scroll="about">About</button><a class="pill" href="#contact">Free Consultation</a>
     </nav>
   </header>
+
+  <section class="ev-panel" id="ev-panel" aria-labelledby="ev-title" hidden>
+    <div class="ev-panel-head">
+      <div><p class="eyebrow">Personal reading preferences</p><h2 id="ev-title">Enhanced Visuals</h2></div>
+      <button type="button" class="ev-close" id="ev-close" aria-label="Close Enhanced Visuals settings">×</button>
+    </div>
+    <p class="ev-intro">Adjust the page for your comfort. Your choices do not change Medicare information or clear the contact form.</p>
+    <div class="ev-setting">
+      <label for="ev-size">Text size</label>
+      <select id="ev-size" name="textSize"><option value="standard">Standard</option><option value="large">Large</option><option value="extra-large">Extra Large</option><option value="maximum">Maximum Readability</option></select>
+    </div>
+    <div class="ev-setting">
+      <label for="ev-theme">Theme</label>
+      <select id="ev-theme" name="theme"><option value="light">Light</option><option value="dark">Dark</option></select>
+    </div>
+    <div class="ev-setting">
+      <label for="ev-contrast">Contrast</label>
+      <select id="ev-contrast" name="contrast"><option value="standard">Standard</option><option value="high">High Contrast</option></select>
+    </div>
+    <div class="ev-setting">
+      <label for="ev-motion">Motion</label>
+      <select id="ev-motion" name="motion"><option value="system">Follow device setting</option><option value="standard">Standard motion</option><option value="reduced">Reduced motion</option></select>
+    </div>
+    <div class="ev-panel-actions">
+      <button type="button" class="pill" id="ev-easy-read">Turn On Easy Read</button>
+      <button type="button" class="pill outline" id="ev-reset">Reset preferences</button>
+    </div>
+    <p class="ev-status" id="ev-status" role="status" aria-live="polite"></p>
+  </section>
+
 
   <main id="top">
     <section class="hero hero-section" data-testid="hero-section">
@@ -762,6 +841,46 @@
     document.documentElement.classList.add('cp-motion-ready');
   })();
   </script>
+
+
+<script id="enhanced-visuals-controller">
+(function(){
+  'use strict';
+  var root=document.documentElement;
+  var trigger=document.getElementById('ev-trigger');
+  var panel=document.getElementById('ev-panel');
+  if(!trigger||!panel)return;
+  var defaults={easyRead:false,textSize:'standard',theme:'light',contrast:'standard',motion:'system'};
+  var allowed={textSize:['standard','large','extra-large','maximum'],theme:['light','dark'],contrast:['standard','high'],motion:['system','standard','reduced']};
+  var controls={textSize:document.getElementById('ev-size'),theme:document.getElementById('ev-theme'),contrast:document.getElementById('ev-contrast'),motion:document.getElementById('ev-motion')};
+  var status=document.getElementById('ev-status');
+  var state=Object.assign({},defaults);
+  try{var saved=JSON.parse(localStorage.getItem('enhancedVisualsPrefs')||'null');if(saved&&typeof saved==='object'){if(typeof saved.easyRead==='boolean')state.easyRead=saved.easyRead;Object.keys(allowed).forEach(function(k){if(allowed[k].indexOf(saved[k])!==-1)state[k]=saved[k];});}}catch(e){}
+  function persist(){try{localStorage.setItem('enhancedVisualsPrefs',JSON.stringify(state));}catch(e){}}
+  function apply(){
+    ['ev-easy-read','ev-text-large','ev-text-extra-large','ev-text-maximum','ev-theme-dark','ev-high-contrast','ev-motion-reduced','ev-motion-standard'].forEach(function(c){root.classList.remove(c);});
+    if(state.easyRead)root.classList.add('ev-easy-read');
+    if(state.textSize!=='standard')root.classList.add('ev-text-'+state.textSize);
+    if(state.theme==='dark')root.classList.add('ev-theme-dark');
+    if(state.contrast==='high')root.classList.add('ev-high-contrast');
+    if(state.motion==='reduced'||(state.motion==='system'&&window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches))root.classList.add('ev-motion-reduced');
+    if(state.motion==='standard')root.classList.add('ev-motion-standard');
+    trigger.setAttribute('aria-pressed',String(state.easyRead));
+    document.getElementById('ev-easy-read').textContent=state.easyRead?'Turn Off Easy Read':'Turn On Easy Read';
+    Object.keys(controls).forEach(function(k){controls[k].value=state[k];});
+    persist();
+  }
+  function announce(message){status.textContent=message;}
+  trigger.addEventListener('click',function(){state.easyRead=!state.easyRead;apply();panel.hidden=false;announce(state.easyRead?'Easy Read is on. Adjust any setting below.':'Easy Read is off. Your other preferences are unchanged.');});
+  document.getElementById('ev-easy-read').addEventListener('click',function(){state.easyRead=!state.easyRead;apply();announce(state.easyRead?'Easy Read is on.':'Easy Read is off. Your other preferences are unchanged.');});
+  document.getElementById('ev-close').addEventListener('click',function(){panel.hidden=true;trigger.focus();});
+  Object.keys(controls).forEach(function(k){controls[k].addEventListener('change',function(){var previous=state[k];if(allowed[k].indexOf(this.value)!==-1){state[k]=this.value;apply();announce(k==='textSize'?'Text size updated.':'Preference updated.');}else{state[k]=previous;this.value=previous;}});});
+  document.getElementById('ev-reset').addEventListener('click',function(){state=Object.assign({},defaults);apply();announce('Accessibility preferences reset. Contact form entries were not changed.');});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!panel.hidden){panel.hidden=true;trigger.focus();}});
+  if(window.matchMedia){var media=window.matchMedia('(prefers-reduced-motion: reduce)');var sync=function(){if(state.motion==='system')apply();};if(media.addEventListener)media.addEventListener('change',sync);else if(media.addListener)media.addListener(sync);}
+  apply();
+})();
+</script>
 
 </body>
 </html>
