@@ -258,8 +258,10 @@
     }
 
   
-    /* Mobile performance + refined motion: keep the first screen immediate and scrolling light. */
-    @media (prefers-reduced-motion: no-preference) {
+    /* Mobile performance + refined motion: keep the first screen immediate and scrolling light.
+       Keep these shorter timings scoped to mobile so they cannot suppress or replace
+       the established desktop entrance animation system. */
+    @media (max-width: 760px) and (prefers-reduced-motion: no-preference) {
       .site-header { animation: none; }
       .hero-copy { animation: cp-soft-enter .58s cubic-bezier(.22,1,.36,1) both; }
       .hero-visual { animation: cp-soft-enter .62s .04s cubic-bezier(.22,1,.36,1) both; }
