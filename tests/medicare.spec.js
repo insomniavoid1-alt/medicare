@@ -38,6 +38,36 @@ test('desktop navigation scrolls to each named section', async ({ page, isMobile
   await expect.poll(async () => (await page.getByTestId('medigap-section').boundingBox()).y).toBeLessThan(250);
 });
 
+test('mobile motion stays subtle, lightweight, and respects reduced motion', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'This motion audit targets the mobile art direction.');
+  const motion = await page.evaluate(() => {
+    const reveals = [...document.querySelectorAll('.cp-reveal')];
+    return {
+      revealCount: reveals.length,
+      nestedTextTargets: reveals.filter(el => /^(P|A|LI|SPAN|SMALL|STRONG)$/.test(el.tagName)).length,
+      alwaysPromotedLayers: reveals.filter(el => getComputedStyle(el).willChange !== 'auto').length,
+      menuClosed: getComputedStyle(document.querySelector('#mobile-menu')).visibility === 'hidden',
+      menuTransition: getComputedStyle(document.querySelector('#mobile-menu')).transitionDuration
+    };
+  });
+  expect(motion.revealCount).toBeGreaterThan(0);
+  expect(motion.revealCount).toBeLessThan(45);
+  expect(motion.nestedTextTargets).toBe(0);
+  expect(motion.alwaysPromotedLayers).toBe(0);
+  expect(motion.menuClosed).toBe(true);
+  expect(motion.menuTransition).toContain('0.28s');
+
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const reduced = await page.evaluate(() => ({
+    cardTransition: getComputedStyle(document.querySelector('.part-card')).transitionDuration,
+    revealOpacity: getComputedStyle(document.querySelector('.cp-reveal')).opacity,
+    revealTransition: getComputedStyle(document.querySelector('.cp-reveal')).transitionDuration
+  }));
+  expect(reduced.cardTransition).toBe('0s');
+  expect(reduced.revealOpacity).toBe('1');
+  expect(reduced.revealTransition).toBe('0s');
+});
+
 test('Part A through D cost details expand and collapse accessibly', async ({ page }) => {
   for (const part of ['a', 'b', 'c', 'd']) {
     const button = page.getByTestId(`part-${part}-details-toggle`);
