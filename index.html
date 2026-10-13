@@ -42,6 +42,19 @@
     @media(max-width:760px){.admin-link{display:none}.marquee-track{animation-duration:26s}}
 
 
+    .hero-abcd-panel{width:100%;height:440px;aspect-ratio:1/1;max-height:440px;padding:25px;display:flex;flex-direction:column;justify-content:space-between;gap:20px;border:1px solid #e3d9c7;border-radius:28px;background:linear-gradient(145deg,#fffdf8 0%,#f0f5ef 100%);box-shadow:var(--shadow);overflow:hidden}
+    .hero-abcd-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .hero-abcd-subtitle{color:#687369;font-family:var(--serif);font-size:14px;font-style:italic}
+    .hero-abcd-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:12px;flex:1;min-height:0}
+    .hero-abcd-tile{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:5px;min-width:0;padding:16px;border:1px solid rgba(15,81,50,.09);border-radius:17px;background:#fff;box-shadow:0 4px 14px rgba(29,46,35,.045)}
+    .hero-abcd-letter{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:var(--green);color:#fff;font-family:var(--serif);font-size:26px;line-height:1}
+    .hero-abcd-b .hero-abcd-letter{background:#557b60}.hero-abcd-c .hero-abcd-letter{background:#b18a28}.hero-abcd-d .hero-abcd-letter{background:#68798b}
+    .hero-abcd-name{margin-top:5px;color:#28392d;font-size:15px;font-weight:800;line-height:1.25}
+    .hero-abcd-tile small{color:#707970;font-size:11px;line-height:1.4}
+    .hero-abcd-note{margin:0;color:#58665a;font-size:11px;font-weight:700}
+    @media(max-width:760px){.hero-abcd-panel{height:360px;max-height:360px;padding:18px;border-radius:23px}.hero-abcd-grid{gap:9px}.hero-abcd-tile{padding:11px;border-radius:13px}.hero-abcd-letter{width:35px;height:35px;font-size:22px}.hero-abcd-name{font-size:13px}.hero-abcd-tile small{font-size:10px}.hero-abcd-subtitle{font-size:12px}}
+    @media(max-width:420px){.hero-abcd-panel{height:320px;max-height:320px;padding:15px;gap:12px}.hero-abcd-grid{gap:8px}.hero-abcd-tile{padding:9px}.hero-abcd-letter{width:32px;height:32px;font-size:20px}.hero-abcd-name{font-size:12px}.hero-abcd-tile small{font-size:9px}}
+
     .hero-parts-chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
     .hero-parts-chips>span{display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid #e7e2da;border-radius:12px;background:rgba(255,255,255,.72)}
     .hero-parts-chips b{display:grid;place-items:center;width:31px;height:31px;border-radius:9px;background:var(--green);color:white;font-family:var(--serif);font-size:18px}
@@ -121,12 +134,16 @@
             <div class="trust-row"><span><i class="check">✓</i>No fee for broker guidance</span><span><i class="check">✓</i>Licensed &amp; independent</span><span><i class="check">✓</i>CMS compliant</span></div>
           </div>
           <div class="hero-visual">
-            <div class="hero-image-wrap">
-              <img class="hero-photo" src="https://images.unsplash.com/photo-1761839257647-df30867afd54?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzN8MHwxfHNlYXJjaHwxfHxzZW5pb3IlMjBjb3VwbGUlMjBoYXBweSUyMG91dGRvb3JzfGVufDB8fHx8MTc5MDkxMDUxNHww&ixlib=rb-4.1.0&q=85" alt="Senior couple enjoying retirement with coverage peace of mind" fetchpriority="high">
-              <div class="hero-caption" data-testid="hero-broker-card"><img class="hero-broker-avatar" src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA3MDB8MHwxfHNlYXJjaHwyfHxmcmllbmRseSUyMGluc3VyYW5jZSUyMGJyb2tlciUyMHBvcnRyYWl0fGVufDB8fHx8MTc5MDkxMDUxM3ww&ixlib=rb-4.1.0&q=85" alt="Sarah Jenkins"><span><strong>Sarah Jenkins</strong><a class="hero-broker-link" href="tel:+18005550199" data-testid="hero-broker-phone-link">(800) 555-0199</a></span></div>
+            <div class="hero-abcd-panel" aria-label="Medicare Parts A, B, C and D">
+              <div class="hero-abcd-heading"><span class="eyebrow">Medicare at a glance</span><span class="hero-abcd-subtitle">Four parts. A clearer path.</span></div>
+              <div class="hero-abcd-grid">
+                <article class="hero-abcd-tile hero-abcd-a" data-testid="hero-part-chip-a"><span class="hero-abcd-letter">A</span><span class="hero-abcd-name">Hospital</span><small>Inpatient care</small></article>
+                <article class="hero-abcd-tile hero-abcd-b" data-testid="hero-part-chip-b"><span class="hero-abcd-letter">B</span><span class="hero-abcd-name">Medical</span><small>Doctors &amp; outpatient</small></article>
+                <article class="hero-abcd-tile hero-abcd-c" data-testid="hero-part-chip-c"><span class="hero-abcd-letter">C</span><span class="hero-abcd-name">Advantage</span><small>All-in-one plan option</small></article>
+                <article class="hero-abcd-tile hero-abcd-d" data-testid="hero-part-chip-d"><span class="hero-abcd-letter">D</span><span class="hero-abcd-name">Prescriptions</span><small>Drug coverage</small></article>
+              </div>
+              <p class="hero-abcd-note">Four letters. One decision. We'll walk it together.</p>
             </div>
-            <div class="hero-parts-chips" aria-label="Medicare parts"><span data-testid="hero-part-chip-a"><b>A</b><small>Part A<br>Hospital</small></span><span data-testid="hero-part-chip-b"><b>B</b><small>Part B<br>Medical</small></span><span data-testid="hero-part-chip-c"><b>C</b><small>Part C<br>Advantage</small></span><span data-testid="hero-part-chip-d"><b>D</b><small>Part D<br>Drug</small></span></div>
-            <p class="hero-parts-note">Four letters. One decision. We'll walk it together.</p>
           </div>
         </div>
         <div class="hero-bottom"><span><strong>Independent guidance.</strong> Your needs come first.</span><span>Parts A, B, C &amp; D · Advantage · Medigap</span></div>
