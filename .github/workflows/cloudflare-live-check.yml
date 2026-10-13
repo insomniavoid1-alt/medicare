@@ -67,48 +67,53 @@ jobs:
               const page = await context.newPage();
               page.on('pageerror', error => errors.push(error.message));
               page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
+              await page.addInitScript(() => {
+                window.__headlineMotion = [];
+                document.addEventListener('animationstart', event => {
+                  if (event.animationName !== 'cp-line-enter') return;
+                  const el = event.target;
+                  const record = { text: el.textContent.trim(), samples: [] };
+                  const sample = label => {
+                    const style = getComputedStyle(el);
+                    const animation = el.getAnimations().find(item => item.animationName === 'cp-line-enter');
+                    record.samples.push({
+                      at: label,
+                      opacity: style.opacity,
+                      transform: style.transform,
+                      currentTime: animation ? animation.currentTime : null
+                    });
+                  };
+                  sample(0);
+                  [100, 300, 600].forEach(ms => setTimeout(() => sample(ms), ms));
+                  window.__headlineMotion.push(record);
+                }, true);
+              });
               await page.goto(process.env.LIVE_URL, { waitUntil: 'domcontentloaded', timeout: 60000 });
-              const initial = await page.evaluate(() => ({
+              const state = await page.evaluate(() => ({
                 title: document.title,
                 reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches,
-                headerAnimation: getComputedStyle(document.querySelector('.site-header')).animationName,
-                lines: [...document.querySelectorAll('.hero-copy > h1 > span, .hero-copy > h1 > em')].map(el => {
-                  const style = getComputedStyle(el);
-                  const animation = el.getAnimations()[0];
-                  return {
-                    text: el.textContent.trim(),
-                    animationName: style.animationName,
-                    animationDelay: style.animationDelay,
-                    animationDuration: style.animationDuration,
-                    playState: animation ? animation.playState : 'missing',
-                    currentTime: animation ? animation.currentTime : null,
-                    opacity: style.opacity,
-                    transform: style.transform
-                  };
-                })
+                readyClass: document.documentElement.classList.contains('cp-entrance-ready'),
+                lines: [...document.querySelectorAll('.hero-copy > h1 > span, .hero-copy > h1 > em')].map(el => ({
+                  text: el.textContent.trim(),
+                  animationName: getComputedStyle(el).animationName,
+                  animationDelay: getComputedStyle(el).animationDelay
+                }))
               }));
-              console.log('Initial live desktop animation state:', JSON.stringify(initial));
-              if (initial.title !== 'Michael Dovsky | Independent Medicare Broker') throw new Error('Unexpected live page title');
-              if (initial.reducedMotion) throw new Error('Test browser unexpectedly has reduced motion enabled');
-              if (!initial.headerAnimation.includes('cp-soft-enter')) throw new Error('Desktop header entrance animation is not active on Cloudflare');
-              if (initial.lines.length !== 3) throw new Error('Expected three separate desktop headline rows');
-              if (!initial.lines.every(line => line.animationName.includes('cp-line-enter') && line.playState !== 'missing')) throw new Error('A headline row has no running CSS animation');
-              if (new Set(initial.lines.map(line => line.animationDelay)).size !== 3) throw new Error('Headline rows do not have staggered entrance timing');
-              const samples = [];
-              for (const wait of [80, 180, 260, 360, 520]) {
-                await page.waitForTimeout(wait);
-                samples.push(await page.evaluate(() => [...document.querySelectorAll('.hero-copy > h1 > span, .hero-copy > h1 > em')].map(el => {
-                  const style = getComputedStyle(el);
-                  const animation = el.getAnimations()[0];
-                  return { opacity: style.opacity, transform: style.transform, currentTime: animation ? animation.currentTime : null };
-                })));
+              console.log('Live desktop animation setup:', JSON.stringify(state));
+              if (state.title !== 'Michael Dovsky | Independent Medicare Broker') throw new Error('Unexpected live page title');
+              if (state.reducedMotion) throw new Error('Test browser unexpectedly has reduced motion enabled');
+              if (state.lines.length !== 3) throw new Error('Expected three separate desktop headline rows');
+              if (!state.lines.every(line => line.animationName.includes('cp-line-enter'))) throw new Error('A headline row has no animation assigned');
+              if (new Set(state.lines.map(line => line.animationDelay)).size !== 3) throw new Error('Headline rows do not have staggered entrance timing');
+              await page.waitForTimeout(1400);
+              const records = await page.evaluate(() => window.__headlineMotion);
+              console.log('Observed animation-start progression:', JSON.stringify(records));
+              if (records.length !== 3) throw new Error('Expected animationstart events for all three headline rows; got ' + records.length);
+              for (const record of records) {
+                if (record.samples.length < 4) throw new Error('Missing timed samples for headline row: ' + record.text);
+                const signatures = new Set(record.samples.map(s => s.opacity + '|' + s.transform));
+                if (signatures.size < 2) throw new Error('Headline row did not visibly progress after animationstart: ' + record.text);
               }
-              console.log('Headline animation progression samples:', JSON.stringify(samples));
-              const moved = initial.lines.some((line, i) => samples.some(sample => {
-                const current = sample[i];
-                return current && (current.opacity !== line.opacity || current.transform !== line.transform || current.currentTime !== line.currentTime);
-              }));
-              if (!moved) throw new Error('Headline CSS animation properties exist but no row showed runtime progression');
               if (errors.length) throw new Error('Browser errors detected: ' + JSON.stringify(errors));
               await page.goto(process.env.LIVE_URL, { waitUntil: 'networkidle', timeout: 60000 });
               const revealCount = await page.locator('.cp-reveal').count();
@@ -119,7 +124,7 @@ jobs:
                 const el = document.querySelector('#medigap .feature-copy > .section-title');
                 return !!el && el.classList.contains('cp-visible');
               }, null, { timeout: 10000 });
-              console.log('PASS: live headline motion progresses in runtime and lower-page scroll reveal activates.');
+              console.log('PASS: headline rows animate after first paint and lower-page scroll reveal activates.');
               await context.close();
             } finally {
               await browser.close();
