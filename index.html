@@ -4,6 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#faf8f5">
+  <script>
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    window.addEventListener('load', () => window.scrollTo(0, 0));
+    window.addEventListener('pageshow', () => window.scrollTo(0, 0));
+  </script>
   <meta name="description" content="Independent Medicare guidance in plain English. Understand Parts A, B, C and D, Medicare Advantage, and Medigap with Michael Dovsky, Independent Medicare Broker.">
   <title>Michael Dovsky | Independent Medicare Broker</title>
   <style>
