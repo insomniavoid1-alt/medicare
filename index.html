@@ -597,11 +597,32 @@
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduce || !('IntersectionObserver' in window)) return;
 
-    /* Reveal substantial content blocks on both desktop and mobile.
-       The hero has its own entrance choreography, so it is not hidden here. */
-    var targets = document.querySelectorAll(
-      '.section-heading, .broker-photo-wrap, .part-card, .benefit-card, .feature-grid > .feature-image, .feature-copy, .compare-table-wrap, .contact-reasons > div, .lead-card, .footer-grid > div'
-    );
+    var desktop = window.matchMedia('(min-width: 761px)').matches;
+    /* Desktop keeps the original richer, page-wide stagger. Mobile uses fewer,
+       larger targets so its layout stays light and never double-animates hero tiles. */
+    var desktopTargets = [
+      '.section-heading',
+      '.broker-photo-wrap',
+      '.broker-grid h2', '.broker-grid h3', '.broker-grid p',
+      '.broker-grid .contact-link', '.broker-grid .broker-note',
+      '.part-card',
+      '.hero-abcd-heading', '.hero-abcd-note',
+      '.benefit-card',
+      '.feature-grid > .feature-image',
+      '.feature-copy > .eyebrow', '.feature-copy > .section-title',
+      '.feature-copy > p:not(.eyebrow)', '.feature-copy > .feature-list',
+      '.feature-copy > .plan-chips', '.feature-copy > .feature-aside',
+      '.compare-table-wrap', '.compare-footnote',
+      '.contact-copy > *', '.contact-reasons > *',
+      '.lead-card > *',
+      '.footer-grid > div', '.footer-bottom > *'
+    ].join(', ');
+    var mobileTargets = [
+      '.section-heading, .broker-photo-wrap, .part-card, .benefit-card, ' +
+      '.feature-grid > .feature-image, .feature-copy, .compare-table-wrap, ' +
+      '.contact-reasons > div, .lead-card, .footer-grid > div'
+    ].join('');
+    var targets = document.querySelectorAll(desktop ? desktopTargets : mobileTargets);
     if (!targets.length) return;
 
     var grouped = new Map();
@@ -609,7 +630,7 @@
       el.classList.add('cp-reveal');
       var parent = el.parentElement || document.body;
       var count = grouped.get(parent) || 0;
-      el.style.setProperty('--cp-reveal-delay', Math.min(count, 3) * 65 + 'ms');
+      el.style.setProperty('--cp-reveal-delay', Math.min(count, desktop ? 5 : 3) * (desktop ? 65 : 55) + 'ms');
       grouped.set(parent, count + 1);
     });
 
@@ -620,10 +641,10 @@
           observer.unobserve(entry.target);
         }
       });
-    }, { rootMargin: '0px 0px -4% 0px', threshold: 0.06 });
+    }, { rootMargin: '0px 0px -3% 0px', threshold: 0.04 });
 
     targets.forEach(function (el) {
-      /* Do not animate content already visible at first paint; reveal as the user scrolls. */
+      /* Visible-at-load content stays visible; lower content reveals on scroll. */
       var rect = el.getBoundingClientRect();
       if (rect.top < window.innerHeight * 0.92 && rect.bottom > 0) {
         el.classList.add('cp-visible');
