@@ -27,7 +27,7 @@ function cors(request, env) {
   if (!origin || origin !== env.SITE_ORIGIN) return {};
   return {
     "Access-Control-Allow-Origin": env.SITE_ORIGIN,
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
     "Vary": "Origin"
   };
@@ -74,7 +74,7 @@ export default {
       if (!checkAuth()) return json({ error: "Editor access denied." }, 401, headers);
       return json({ ok: true, service: "ClearPath Medicare editor API" }, 200, headers);
     }
-    if (!checkAuth(request, env)) return json({ error: "Editor password is incorrect." }, 401, headers);
+    if (!checkAuth()) return json({ error: "Editor access denied." }, 401, headers);
     if (request.method !== "POST") return json({ error: "POST required." }, 405, headers);
 
     try {
