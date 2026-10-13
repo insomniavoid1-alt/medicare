@@ -423,7 +423,16 @@ html.ev-motion-reduced *,html.ev-motion-reduced *::before,html.ev-motion-reduced
 @media(max-width:420px){.ev-trigger{max-width:108px;font-size:10px;padding:7px 8px}.brand-name{font-size:14px}}
 @media(prefers-reduced-motion:reduce){html:not(.ev-motion-standard) * ,html:not(.ev-motion-standard) *::before,html:not(.ev-motion-standard) *::after{scroll-behavior:auto}}
 
-  </style>
+  
+/* Keep high-contrast text legible when the independently selected dark theme is active. */
+html.ev-theme-dark.ev-high-contrast{--ink:#fff;--muted:#f0f0f0;--line:#d8d8d8;--green:#b8f0c9;--green2:#d6ffe1}
+html.ev-theme-dark.ev-high-contrast :is(p,.hero-lede,.section-intro,.broker-copy,.feature-copy p,.part-card ul,.compare-table td,.disclosure,.form-disclaimer,.part-card .part-sub){color:#fff}
+html.ev-theme-dark.ev-high-contrast :is(.site-header,.broker,.feature-section,.contact-section,.part-card,.lead-card,.compare-table-wrap,.compare-table,.compare-table thead th,.ev-panel){background:#000;color:#fff;border-color:#fff}
+html.ev-theme-dark.ev-high-contrast :is(.section-title,.hero h1,.broker h2,.feature-copy h2,.part-card h3,.compare-table th,.compare-table td,.field label,.lead-card h3){color:#fff}
+html.ev-theme-dark.ev-high-contrast :is(.field input,.field textarea,.ev-setting select){background:#000;color:#fff;border:2px solid #fff}
+html.ev-theme-dark.ev-high-contrast .pill{background:#fff;color:#000;border:2px solid #fff}
+
+</style>
 </head>
 <body>
   <header class="site-header">
