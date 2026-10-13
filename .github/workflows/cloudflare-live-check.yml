@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - name: Check out current main
+      - name: Check out the commit whose checks just passed
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event_name == 'workflow_dispatch' && 'main' || github.event.workflow_run.head_sha }}
@@ -32,11 +32,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          set -euo pipefail
           url="https://medicare-6pj.pages.dev/"
           ready=0
           expected_sha="$(sha256sum index.html | awk '{print $1}')"
-          echo "Expected source commit: $GITHUB_SHA"
+          echo "Expected source commit: $(git rev-parse HEAD)"
           echo "Expected index.html SHA-256: $expected_sha"
           for attempt in $(seq 1 30); do
             if curl --fail --silent --show-error --location "$url" -o /tmp/cloudflare.html \
