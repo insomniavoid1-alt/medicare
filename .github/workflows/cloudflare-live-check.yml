@@ -1,0 +1,91 @@
+name: Cloudflare live-site verification
+
+on:
+  workflow_run:
+    workflows: ["Medicare site checks and Pages deployment"]
+    branches: [main]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-cloudflare:
+    if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out current main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install test dependencies
+        run: npm install --no-audit --no-fund
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Wait for Cloudflare to publish the expected version
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://medicare-6pj.pages.dev/"
+          ready=0
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent --show-error --location "$url" -o /tmp/cloudflare.html \
+              && grep -q '<title>Michael Dovsky | Independent Medicare Broker</title>' /tmp/cloudflare.html \
+              && grep -q 'cp-soft-enter' /tmp/cloudflare.html \
+              && grep -q 'cp-reveal' /tmp/cloudflare.html; then
+              ready=1
+              echo "Cloudflare serves the expected page and animation hooks (attempt $attempt)."
+              break
+            fi
+            echo "Cloudflare not ready or expected animation hooks absent (attempt $attempt/30); waiting 20 seconds."
+            sleep 20
+          done
+          if [ "$ready" -ne 1 ]; then
+            echo "::error::Cloudflare did not serve the expected page and animation hooks within 10 minutes."
+            exit 1
+          fi
+      - name: Verify live desktop animations in Chromium
+        env:
+          LIVE_URL: https://medicare-6pj.pages.dev/
+        run: |
+          node <<'NODE'
+          const { chromium } = require('@playwright/test');
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            try {
+              const context = await browser.newContext({
+                viewport: { width: 1440, height: 1000 },
+                reducedMotion: 'no-preference'
+              });
+              const page = await context.newPage();
+              await page.goto(process.env.LIVE_URL, { waitUntil: 'networkidle', timeout: 60000 });
+              const state = await page.evaluate(() => ({
+                title: document.title,
+                reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches,
+                headerAnimation: getComputedStyle(document.querySelector('.site-header')).animationName,
+                revealCount: document.querySelectorAll('.cp-reveal').length
+              }));
+              console.log('Initial live desktop animation state:', JSON.stringify(state));
+              if (state.title !== 'Michael Dovsky | Independent Medicare Broker') throw new Error('Unexpected live page title');
+              if (state.reducedMotion) throw new Error('Test browser unexpectedly has reduced motion enabled');
+              if (!state.headerAnimation.includes('cp-soft-enter')) throw new Error('Desktop header entrance animation is not active on Cloudflare');
+              if (state.revealCount <= 15) throw new Error('Expected page-wide scroll reveal targets are missing');
+              const lowerSection = page.locator('#medigap .feature-copy > .section-title').first();
+              await lowerSection.scrollIntoViewIfNeeded();
+              await page.waitForFunction(() => {
+                const el = document.querySelector('#medigap .feature-copy > .section-title');
+                return !!el && el.classList.contains('cp-visible');
+              }, null, { timeout: 10000 });
+              console.log('PASS: live Cloudflare desktop entrance animation and lower-page scroll reveal are active.');
+              await context.close();
+            } finally {
+              await browser.close();
+            }
+          })().catch(error => { console.error(error); process.exit(1); });
+          NODE
