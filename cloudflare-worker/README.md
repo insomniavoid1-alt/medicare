@@ -1,11 +1,11 @@
 # ClearPath Medicare live visual editor
 
-The public site remains a static HTML page deployed from GitHub Pages. Cloudflare continues to manage the custom domain. The visual editor is included in `index.html`; the private publishing API is `cloudflare-worker/medicare-editor.js`.
+The public site remains a static HTML page deployed from GitHub Pages. Cloudflare continues to manage the custom domain. The visual editor is included in `index.html`; the publishing API is `cloudflare-worker/medicare-editor.js`.
 
 ## What the editor does
 
 - Shows the **Edit website** button on the page by default; editor access is passwordless for pre-launch work.
-- Supports direct text editing, field/placeholder updates, standard image replacement, CSS background-image replacement, and image alt-text updates.
+- Supports direct text editing, field/placeholder updates, standard image replacement, inline CSS background-image replacement, and image alt-text updates.
 - Lets the editor click text to edit it and click an image to replace it.
 - Publishes page HTML and image uploads through the Cloudflare Worker without a password.
 - Keeps the GitHub token on the Worker, never in the browser.
@@ -27,7 +27,7 @@ These account-level steps cannot be completed from this repository alone.
 ## First-use checklist
 
 - Visit `https://YOUR-DOMAIN/api/health` only after deployment; it should return editor API status without a password.
-- Open your site normally and choose **Edit website**, then click **Open editor**. Select text, standard images, or inline CSS background images to edit them.
+- Open your site normally and choose **Edit website**, then click **Open editor**. Select text, standard images, or elements with inline CSS background images to edit them.
 - Click a short text element and edit it; click an image to upload a replacement; choose **Save & publish**.
 - Confirm the GitHub Actions workflow passes, then check the public page in a fresh tab.
 
@@ -36,6 +36,6 @@ These account-level steps cannot be completed from this repository alone.
 - Changes commit to the `main` branch. GitHub Actions tests the page and deploys the new version.
 - Uploaded images are saved under `assets/uploads/`; the deployment workflow copies that directory into the published artifact.
 - If a deploy fails, the previous published version normally remains live. Check the Actions run before retrying.
-- This editor is intentionally a small visual content editor, not a full page builder. Editing navigation links, form behavior, scripts, or complex nested elements is not recommended.
+- This editor is intentionally a visual content editor, not a full page builder. It supports ordinary HTML text elements, common form-field values/placeholders, `<img>` images, and inline CSS background images. Text drawn by canvas, pseudo-elements, or some SVG internals, and background images defined only in external stylesheets, may need direct code edits. Editing navigation behavior, scripts, or complex nested structures is not recommended.
 - The existing contact form opens an email app and does not securely store or submit leads to a server.
 - Passwordless mode is not safe for a public website: anyone who can reach the Worker route can change the page or upload images. Before launch, restore authentication and keep the GitHub token private.
