@@ -116,7 +116,9 @@
       from { opacity: 0; transform: translate3d(0, .42em, 0); }
       to { opacity: 1; transform: translate3d(0, 0, 0); }
     }
-    @media (min-width: 761px) and (prefers-reduced-motion: no-preference) {
+    /* Keep the desktop entrance available in browsers that do not recognize the no-preference query. */
+    /* The explicit reduced-motion rules below still disable motion for users who request it. */
+    @media (min-width: 761px) {
       .hero-copy { animation: none; }
       .hero-copy > .eyebrow {
         animation: cp-soft-enter .72s .04s cubic-bezier(.22,1,.36,1) both;
