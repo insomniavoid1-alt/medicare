@@ -598,24 +598,24 @@
     if (reduce || !('IntersectionObserver' in window)) return;
 
     var desktop = window.matchMedia('(min-width: 761px)').matches;
-    /* Desktop keeps the original richer, page-wide stagger. Mobile uses fewer,
-       larger targets so its layout stays light and never double-animates hero tiles. */
+
+    /* Restore the richer desktop choreography from the pre-mobile-refinement
+       implementation. Keep the mobile target set deliberately coarse to avoid
+       nested transforms and conflicts with the mobile hero-tile animations. */
     var desktopTargets = [
-      '.section-heading',
+      '.section-heading', '.section-heading > *',
       '.broker-photo-wrap',
       '.broker-grid h2', '.broker-grid h3', '.broker-grid p',
       '.broker-grid .contact-link', '.broker-grid .broker-note',
-      '.part-card',
-      '.hero-abcd-heading', '.hero-abcd-note',
-      '.benefit-card',
-      '.feature-grid > .feature-image',
-      '.feature-copy > .eyebrow', '.feature-copy > .section-title',
-      '.feature-copy > p:not(.eyebrow)', '.feature-copy > .feature-list',
-      '.feature-copy > .plan-chips', '.feature-copy > .feature-aside',
-      '.compare-table-wrap', '.compare-footnote',
+      '.part-card', '.part-card > *',
+      '.hero-abcd-tile', '.hero-abcd-heading > *', '.hero-abcd-note',
+      '.benefit-card', '.benefit-card > *',
+      '.feature-grid .feature-image', '.feature-copy > *',
+      '.feature-list li', '.plan-chips span',
+      '.compare-table-wrap', '.compare-table tr', '.compare-footnote',
       '.contact-copy > *', '.contact-reasons > *',
-      '.lead-card > *',
-      '.footer-grid > div', '.footer-bottom > *'
+      '.lead-card > *', '.lead-card .field',
+      '.footer-grid > *', '.footer-grid p', '.footer-grid a', '.footer-bottom > *'
     ].join(', ');
     var mobileTargets = [
       '.section-heading, .broker-photo-wrap, .part-card, .benefit-card, ' +
@@ -644,7 +644,8 @@
     }, { rootMargin: '0px 0px -3% 0px', threshold: 0.04 });
 
     targets.forEach(function (el) {
-      /* Visible-at-load content stays visible; lower content reveals on scroll. */
+      /* Avoid hiding content that is already visible at first paint; all
+         off-screen content still uses the original observer-driven reveal. */
       var rect = el.getBoundingClientRect();
       if (rect.top < window.innerHeight * 0.92 && rect.bottom > 0) {
         el.classList.add('cp-visible');
