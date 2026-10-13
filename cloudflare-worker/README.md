@@ -4,7 +4,7 @@ The public site remains a static HTML page deployed from GitHub Pages. Cloudflar
 
 ## What the editor does
 
-- Shows an **Edit website** button on the live page.
+- Shows an **Edit website** button only when you open the site with `?edit=1` (or `#edit`), so ordinary visitors do not see the editor entry point.
 - Requires a private editor password before enabling edits.
 - Lets the editor click text to edit it and click an image to replace it.
 - Publishes page HTML and image uploads through an authenticated Cloudflare Worker.
@@ -27,7 +27,7 @@ These account-level steps cannot be completed from this repository alone.
 ## First-use checklist
 
 - Visit `https://YOUR-DOMAIN/api/health` only after deployment. The endpoint intentionally requires the editor password and is expected to reject unauthenticated requests.
-- Open the website and choose **Edit website**. Enter the exact `EDITOR_PASSWORD`.
+- Open your live site with `?edit=1` at the end of the URL (for example, `https://YOUR-DOMAIN/?edit=1`). Choose **Edit website** and enter the exact `EDITOR_PASSWORD`.
 - Click a short text element and edit it; click an image to upload a replacement; choose **Save & publish**.
 - Confirm the GitHub Actions workflow passes, then check the public page in a fresh tab.
 
