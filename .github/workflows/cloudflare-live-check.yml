@@ -124,7 +124,54 @@ jobs:
                 const el = document.querySelector('#medigap .feature-copy > .section-title');
                 return !!el && el.classList.contains('cp-visible');
               }, null, { timeout: 10000 });
-              console.log('PASS: headline rows animate after first paint and lower-page scroll reveal activates.');
+              const mobileContext = await browser.newContext({
+                viewport: { width: 390, height: 844 },
+                reducedMotion: 'no-preference'
+              });
+              const mobilePage = await mobileContext.newPage();
+              const mobileErrors = [];
+              mobilePage.on('pageerror', error => mobileErrors.push(error.message));
+              mobilePage.on('console', message => { if (message.type() === 'error') mobileErrors.push(message.text()); });
+              await mobilePage.addInitScript(() => {
+                window.__headlineMotion = [];
+                document.addEventListener('animationstart', event => {
+                  if (event.animationName !== 'cp-line-enter') return;
+                  const el = event.target;
+                  const record = { text: el.textContent.trim(), samples: [] };
+                  const sample = label => {
+                    const style = getComputedStyle(el);
+                    record.samples.push({ at: label, opacity: style.opacity, transform: style.transform });
+                  };
+                  sample(0);
+                  [100, 300, 600].forEach(ms => setTimeout(() => sample(ms), ms));
+                  window.__headlineMotion.push(record);
+                }, true);
+              });
+              await mobilePage.goto(process.env.LIVE_URL, { waitUntil: 'domcontentloaded', timeout: 60000 });
+              const mobileState = await mobilePage.evaluate(() => ({
+                width: innerWidth,
+                reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches,
+                lines: [...document.querySelectorAll('.hero-copy > h1 > span, .hero-copy > h1 > em')].map(el => ({
+                  text: el.textContent.trim(),
+                  animationName: getComputedStyle(el).animationName,
+                  animationDelay: getComputedStyle(el).animationDelay
+                }))
+              }));
+              console.log('Live mobile animation setup:', JSON.stringify(mobileState));
+              if (mobileState.width > 760) throw new Error('Mobile viewport did not activate mobile CSS');
+              if (mobileState.reducedMotion) throw new Error('Mobile test browser unexpectedly has reduced motion enabled');
+              if (mobileState.lines.length !== 3 || !mobileState.lines.every(line => line.animationName.includes('cp-line-enter'))) throw new Error('Mobile headline rows do not all have the staggered animation');
+              if (new Set(mobileState.lines.map(line => line.animationDelay)).size !== 3) throw new Error('Mobile headline rows do not have distinct stagger delays');
+              await mobilePage.waitForTimeout(1400);
+              const mobileRecords = await mobilePage.evaluate(() => window.__headlineMotion);
+              console.log('Observed mobile animation progression:', JSON.stringify(mobileRecords));
+              if (mobileRecords.length !== 3) throw new Error('Expected animationstart events for all three mobile headline rows; got ' + mobileRecords.length);
+              for (const record of mobileRecords) {
+                if (record.samples.length < 4 || new Set(record.samples.map(s => s.opacity + '|' + s.transform)).size < 2) throw new Error('Mobile headline row did not visibly progress: ' + record.text);
+              }
+              if (mobileErrors.length) throw new Error('Mobile browser errors detected: ' + JSON.stringify(mobileErrors));
+              await mobileContext.close();
+              console.log('PASS: desktop and mobile headline rows stagger visibly; lower-page scroll reveal activates.');
               await context.close();
             } finally {
               await browser.close();
