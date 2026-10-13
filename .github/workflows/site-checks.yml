@@ -1,4 +1,4 @@
-name: Medicare site checks and Pages deployment
+name: Medicare site checks for Cloudflare Pages
 
 on:
   push:
@@ -41,47 +41,3 @@ jobs:
             playwright-report/
             test-results/
           if-no-files-found: ignore
-
-  deploy:
-    name: Deploy static site to GitHub Pages
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
-    needs: playwright
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
-        with:
-          enablement: true
-      - name: Prepare static site artifact
-        run: |
-          mkdir -p site
-          cp index.html site/index.html
-          # Serve the same single-page site as a fallback for Pages 404s.
-          cp index.html site/404.html
-          # Include uploaded images when the visual editor has added any.
-          if [ -d assets ]; then cp -R assets site/assets; fi
-          touch site/.nojekyll
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: site
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-      - name: Verify the published page responds
-        env:
-          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
-        run: |
-          set -eu
-          curl --fail --silent --show-error --location --retry 5 --retry-delay 10 "$PAGE_URL" -o /tmp/published.html
-          grep -q '<title>Michael Dovsky | Independent Medicare Broker</title>' /tmp/published.html
-          test -s /tmp/published.html
