@@ -69,6 +69,10 @@ export default {
     if (!headers["Access-Control-Allow-Origin"]) {
       return json({ error: "Origin not allowed. Configure SITE_ORIGIN to match the live website." }, 403);
     }
+    if (url.pathname === "/api/health" && request.method === "GET") {
+      if (!checkAuth(request, env)) return json({ error: "Editor password is incorrect." }, 401, headers);
+      return json({ ok: true, service: "ClearPath Medicare editor API" }, 200, headers);
+    }
     if (!checkAuth(request, env)) return json({ error: "Editor password is incorrect." }, 401, headers);
     if (request.method !== "POST") return json({ error: "POST required." }, 405, headers);
 
