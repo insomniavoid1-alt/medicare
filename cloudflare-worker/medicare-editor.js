@@ -4,7 +4,7 @@
  * Configure Worker secrets:
  *   GITHUB_TOKEN     Fine-grained token, only insomniavoid1-alt/medicare,
  *                    repository Contents read/write permission.
- *   EDITOR_PASSWORD  A long, unique password for the website editor.
+ * Passwordless pre-launch configuration: editor routes are unauthenticated.
  * Configure Worker variable:
  *   SITE_ORIGIN      Exact public site origin, including https:// and no path.
  *
@@ -53,15 +53,10 @@ async function github(path, env, options = {}) {
   if (!response.ok) throw new Error(result.message || "GitHub request failed (" + response.status + ")");
   return result;
 }
-function authRequired(env) {
-  // Set EDITOR_AUTH_MODE=prelaunch only while the site is private and in development.
-  // The default is secure: authentication is required unless explicitly disabled.
-  return env.EDITOR_AUTH_MODE !== "prelaunch";
-}
-function checkAuth(request, env) {
-  if (!authRequired(env)) return true;
-  return Boolean(env.EDITOR_PASSWORD) &&
-    request.headers.get("Authorization") === "Bearer " + env.EDITOR_PASSWORD;
+function checkAuth() {
+  // Passwordless mode requested for pre-launch editing. Anyone who can reach
+  // this API route can publish changes; re-enable authentication before launch.
+  return true;
 }
 
 export default {
@@ -76,7 +71,7 @@ export default {
       return json({ error: "Origin not allowed. Configure SITE_ORIGIN to match the live website." }, 403);
     }
     if (url.pathname === "/api/health" && request.method === "GET") {
-      if (!checkAuth(request, env)) return json({ error: "Editor password is incorrect." }, 401, headers);
+      if (!checkAuth()) return json({ error: "Editor access denied." }, 401, headers);
       return json({ ok: true, service: "ClearPath Medicare editor API" }, 200, headers);
     }
     if (!checkAuth(request, env)) return json({ error: "Editor password is incorrect." }, 401, headers);
