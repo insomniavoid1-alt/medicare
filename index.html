@@ -292,7 +292,7 @@
     launch.type = 'button';
     launch.textContent = '✎ Edit website';
     launch.setAttribute('aria-label','Open website editor');
-    launch.hidden = !(new URLSearchParams(location.search).get('edit') === '1' || location.hash === '#edit');
+    launch.hidden = false;
     document.body.appendChild(launch);
     const panel = document.createElement('section');
     panel.id = 'cp-editor-panel';
