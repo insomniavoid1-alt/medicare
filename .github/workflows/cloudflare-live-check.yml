@@ -81,7 +81,7 @@ jobs:
               await page.waitForFunction(() => {
                 const el = document.querySelector('#medigap .feature-copy > .section-title');
                 return !!el && el.classList.contains('cp-visible');
-              }, { timeout: 10000 });
+              }, null, { timeout: 10000 });
               console.log('PASS: live Cloudflare desktop entrance animation and lower-page scroll reveal are active.');
               await context.close();
             } finally {
