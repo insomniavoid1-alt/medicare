@@ -13,20 +13,30 @@
     (() => {
       const navigation = performance.getEntriesByType('navigation')[0];
       const freshEntry = !navigation || navigation.type === 'navigate' || navigation.type === 'reload';
-      if ('scrollRestoration' in history && freshEntry && !location.hash) history.scrollRestoration = 'manual';
+      if ('scrollRestoration' in history && freshEntry && !location.hash) {
+        history.scrollRestoration = 'manual';
+      }
+
       const resetFreshPage = (event) => {
-        /* Do not override the browser's saved position when returning via Back/Forward. */
-        if (event.persisted || !freshEntry || location.hash) return;
+        /* Preserve saved positions when navigating Back/Forward or restoring from BFCache. */
+        if (event && event.persisted || !freshEntry || location.hash) return;
         const root = document.documentElement;
         const previousBehavior = root.style.scrollBehavior;
         root.style.scrollBehavior = 'auto';
-        window.scrollTo(0, 0);
+
+        const reset = () => window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+        reset();
         requestAnimationFrame(() => {
-          window.scrollTo(0, 0);
-          root.style.scrollBehavior = previousBehavior;
+          reset();
+          window.setTimeout(() => {
+            reset();
+            root.style.scrollBehavior = previousBehavior;
+          }, 80);
         });
       };
-      window.addEventListener('pageshow', resetFreshPage, { once: true });
+
+      window.addEventListener('load', resetFreshPage);
+      window.addEventListener('pageshow', resetFreshPage);
     })();
   </script>
   <meta name="description" content="Independent Medicare guidance in plain English. Understand Parts A, B, C and D, Medicare Advantage, and Medigap with Michael Dovsky, Independent Medicare Broker.">
@@ -390,7 +400,49 @@
     @media (max-width:760px) {
       .mobile-header-cta, .mobile-toggle { min-height:42px; }
     }
-  </style>
+  
+    /* Cross-browser motion normalization: one mobile entrance per block, with reveal transitions
+       reserved for below-the-fold cards. This prevents competing transforms from stacked rules. */
+    @media (max-width:760px) and (prefers-reduced-motion:no-preference) {
+      .site-header,
+      .hero-copy,
+      .hero-visual,
+      .hero-bottom,
+      .hero-copy .eyebrow,
+      .hero-copy h1,
+      .hero-copy h1 > span,
+      .hero-copy h1 > em,
+      .hero-copy .hero-lede,
+      .hero-copy .hero-actions,
+      .hero-copy .trust-row,
+      .hero-abcd-panel,
+      .hero-abcd-tile {
+        animation: none !important;
+      }
+      .hero-copy .eyebrow { animation: cp-mobile-arrive .55s .04s cubic-bezier(.22,1,.36,1) both !important; }
+      .hero-copy h1 { animation: cp-mobile-arrive .68s .10s cubic-bezier(.22,1,.36,1) both !important; }
+      .hero-copy .hero-lede { animation: cp-mobile-arrive .62s .20s cubic-bezier(.22,1,.36,1) both !important; }
+      .hero-copy .hero-actions { animation: cp-mobile-arrive .62s .28s cubic-bezier(.22,1,.36,1) both !important; }
+      .hero-copy .trust-row { animation: cp-mobile-arrive .58s .36s cubic-bezier(.22,1,.36,1) both !important; }
+      .hero-visual { animation: cp-mobile-arrive .72s .12s cubic-bezier(.22,1,.36,1) both !important; }
+      .hero-bottom { animation: cp-mobile-arrive .55s .18s cubic-bezier(.22,1,.36,1) both !important; }
+    }
+    @media (max-width:760px) {
+      /* Avoid delayed/hidden content if an animation observer is slow or unavailable. */
+      html:not(.cp-motion-ready) .cp-reveal { opacity: 1; transform: none; }
+    }
+    @media (prefers-reduced-motion:reduce) {
+      html, body { scroll-behavior: auto !important; }
+      .cp-reveal, .site-header, .hero-copy, .hero-visual, .hero-bottom,
+      .hero-copy *, .hero-abcd-panel, .hero-abcd-tile {
+        opacity: 1 !important;
+        transform: none !important;
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+
+</style>
 </head>
 <body>
   <header class="site-header">
