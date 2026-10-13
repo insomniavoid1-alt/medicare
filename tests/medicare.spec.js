@@ -44,13 +44,12 @@ test('desktop page-load entrance and page-wide scroll reveals are active', async
     reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches,
     headerAnimation: getComputedStyle(document.querySelector('.site-header')).animationName,
     revealCount: document.querySelectorAll('.cp-reveal').length,
-    revealedAtLoad: document.querySelectorAll('.cp-reveal.cp-visible').length,
     hiddenRevealTargets: [...document.querySelectorAll('.cp-reveal')].filter(el => getComputedStyle(el).opacity === '0').length
   }));
   if (!motion.reducedMotion) {
     expect(motion.headerAnimation).toContain('cp-soft-enter');
     expect(motion.revealCount).toBeGreaterThan(15);
-    expect(motion.revealedAtLoad).toBeGreaterThan(0);
+    await expect.poll(() => page.locator('.cp-reveal.cp-visible').count()).toBeGreaterThan(0);
     expect(motion.hiddenRevealTargets).toBeGreaterThan(0);
     const lowerSection = page.locator('#medigap .feature-copy > .section-title').first();
     await lowerSection.scrollIntoViewIfNeeded();
