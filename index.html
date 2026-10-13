@@ -373,6 +373,20 @@
       .hero-abcd-tile { animation:none!important; }
     }
 
+    /* The desktop headline stagger is intentionally desktop-only. On phones, animate
+       each headline row separately instead of fading the entire h1 as one block. */
+    @media (max-width:760px) and (prefers-reduced-motion:no-preference) {
+      .hero-copy h1 { animation: none; }
+      .hero-copy h1 > span,
+      .hero-copy h1 > em {
+        display: inline-block;
+        animation: cp-line-enter .72s cubic-bezier(.22,1,.36,1) both;
+      }
+      .hero-copy h1 > span:nth-of-type(1) { animation-delay: .13s; }
+      .hero-copy h1 > span:nth-of-type(2) { animation-delay: .29s; }
+      .hero-copy h1 > em { animation-delay: .45s; }
+    }
+
     @media (max-width:760px) {
       .mobile-header-cta, .mobile-toggle { min-height:42px; }
     }
