@@ -5,9 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#faf8f5">
   <script>
-    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-    window.addEventListener('load', () => window.scrollTo(0, 0));
-    window.addEventListener('pageshow', () => window.scrollTo(0, 0));
+    (() => {
+      if (!('scrollRestoration' in history)) return;
+      const navigation = performance.getEntriesByType('navigation')[0];
+      const freshEntry = !location.hash && (!navigation || navigation.type === 'navigate' || navigation.type === 'reload');
+      history.scrollRestoration = freshEntry ? 'manual' : 'auto';
+      if (freshEntry) window.scrollTo(0, 0);
+    })();
   </script>
   <meta name="description" content="Independent Medicare guidance in plain English. Understand Parts A, B, C and D, Medicare Advantage, and Medigap with Michael Dovsky, Independent Medicare Broker.">
   <title>Michael Dovsky | Independent Medicare Broker</title>
@@ -592,19 +596,23 @@
   (function () {
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduce || !('IntersectionObserver' in window)) return;
-    if (!window.matchMedia('(max-width: 760px)').matches) return;
+
+    /* Reveal substantial content blocks on both desktop and mobile.
+       The hero has its own entrance choreography, so it is not hidden here. */
     var targets = document.querySelectorAll(
-      '.section-heading, .broker-photo-wrap, .part-card, .hero-abcd-tile, .benefit-card, .feature-grid > .feature-image, .compare-table-wrap, .contact-reasons > div, .lead-card, .footer-grid > div'
+      '.section-heading, .broker-photo-wrap, .part-card, .benefit-card, .feature-grid > .feature-image, .feature-copy, .compare-table-wrap, .contact-reasons > div, .lead-card, .footer-grid > div'
     );
     if (!targets.length) return;
+
     var grouped = new Map();
     targets.forEach(function (el) {
       el.classList.add('cp-reveal');
       var parent = el.parentElement || document.body;
       var count = grouped.get(parent) || 0;
-      el.style.setProperty('--cp-reveal-delay', Math.min(count, 3) * 55 + 'ms');
+      el.style.setProperty('--cp-reveal-delay', Math.min(count, 3) * 65 + 'ms');
       grouped.set(parent, count + 1);
     });
+
     var observer = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (entry.isIntersecting) {
@@ -612,8 +620,17 @@
           observer.unobserve(entry.target);
         }
       });
-    }, { rootMargin: '0px 0px -5% 0px', threshold: 0.08 });
-    targets.forEach(function (el) { observer.observe(el); });
+    }, { rootMargin: '0px 0px -4% 0px', threshold: 0.06 });
+
+    targets.forEach(function (el) {
+      /* Do not animate content already visible at first paint; reveal as the user scrolls. */
+      var rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight * 0.92 && rect.bottom > 0) {
+        el.classList.add('cp-visible');
+      } else {
+        observer.observe(el);
+      }
+    });
   })();
   </script>
 
