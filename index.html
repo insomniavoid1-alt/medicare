@@ -5,38 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#faf8f5">
   <script>
-    /* Arm the entrance before first paint, then start it after the browser has painted once. */
-    document.documentElement.classList.add('cp-entrance-pending');
-    window.setTimeout(() => document.documentElement.classList.remove('cp-entrance-pending'), 1800);
-  </script>
-  <script>
+    /* Fresh visits and reloads start at the top; preserve hash links and Back/Forward restoration. */
     (() => {
-      const navigation = performance.getEntriesByType('navigation')[0];
-      const freshEntry = !navigation || navigation.type === 'navigate' || navigation.type === 'reload';
-      if ('scrollRestoration' in history && freshEntry && !location.hash) {
-        history.scrollRestoration = 'manual';
-      }
-
-      const resetFreshPage = (event) => {
-        /* Preserve saved positions when navigating Back/Forward or restoring from BFCache. */
-        if (event && event.persisted || !freshEntry || location.hash) return;
-        const root = document.documentElement;
-        const previousBehavior = root.style.scrollBehavior;
-        root.style.scrollBehavior = 'auto';
-
-        const reset = () => window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
-        reset();
-        requestAnimationFrame(() => {
-          reset();
-          window.setTimeout(() => {
-            reset();
-            root.style.scrollBehavior = previousBehavior;
-          }, 80);
-        });
+      const nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+      const freshVisit = !nav || nav.type === 'navigate' || nav.type === 'reload';
+      if (!freshVisit || location.hash) return;
+      if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+      const goTop = () => {
+        if (location.hash) return;
+        document.documentElement.style.scrollBehavior = 'auto';
+        document.body.style.scrollBehavior = 'auto';
+        window.scrollTo(0, 0);
       };
-
-      window.addEventListener('load', resetFreshPage);
-      window.addEventListener('pageshow', resetFreshPage);
+      document.addEventListener('DOMContentLoaded', goTop, { once: true });
+      window.addEventListener('load', goTop, { once: true });
+      window.addEventListener('pageshow', event => {
+        if (!event.persisted) goTop();
+      });
     })();
   </script>
   <meta name="description" content="Independent Medicare guidance in plain English. Understand Parts A, B, C and D, Medicare Advantage, and Medigap with Michael Dovsky, Independent Medicare Broker.">
@@ -113,69 +98,6 @@
 
 
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}}
-  
-    /* Smooth, gentle rise-in motion for individual page elements. */
-    @keyframes cp-soft-enter {
-      from { opacity: 0; transform: translate3d(0, 14px, 0); }
-      to { opacity: 1; transform: translate3d(0, 0, 0); }
-    }
-    /* Keep content hidden only during the short pre-paint arm phase; start motion after first paint. */
-    @media (min-width: 761px) {
-      html.cp-entrance-pending:not(.cp-entrance-ready) .site-header,
-      html.cp-entrance-pending:not(.cp-entrance-ready) .hero-copy,
-      html.cp-entrance-pending:not(.cp-entrance-ready) .hero-visual,
-      html.cp-entrance-pending:not(.cp-entrance-ready) .hero-bottom { opacity: 0; }
-      html.cp-entrance-ready .site-header { animation: cp-soft-enter 1.15s cubic-bezier(.22,1,.36,1) both; }
-      html.cp-entrance-ready .hero-copy { animation: cp-soft-enter 1.25s .08s cubic-bezier(.22,1,.36,1) both; }
-      html.cp-entrance-ready .hero-visual { animation: cp-soft-enter 1.3s .16s cubic-bezier(.22,1,.36,1) both; }
-      html.cp-entrance-ready .hero-bottom { animation: cp-soft-enter 1.1s .22s cubic-bezier(.22,1,.36,1) both; }
-    }
-
-    /* Desktop hero choreography: animate each headline row and supporting text
-       independently. Animating .hero-copy as one block made every line arrive
-       together, which erased the intended row-by-row entrance. */
-    @keyframes cp-line-enter {
-      from { opacity: 0; transform: translate3d(0, .42em, 0); }
-      to { opacity: 1; transform: translate3d(0, 0, 0); }
-    }
-    /* Keep the desktop entrance available in browsers that do not recognize the no-preference query. */
-    /* The explicit reduced-motion rules below still disable motion for users who request it. */
-    @media (min-width: 761px) {
-      html.cp-entrance-ready .hero-copy { animation: none; }
-      html.cp-entrance-ready .hero-copy > .eyebrow {
-        animation: cp-soft-enter .72s .04s cubic-bezier(.22,1,.36,1) both;
-      }
-      html.cp-entrance-ready .hero-copy > h1 > span,
-      html.cp-entrance-ready .hero-copy > h1 > em {
-        display: inline-block;
-        animation: cp-line-enter .88s cubic-bezier(.22,1,.36,1) both;
-      }
-      html.cp-entrance-ready .hero-copy > h1 > span:nth-of-type(1) { animation-delay: .13s; }
-      html.cp-entrance-ready .hero-copy > h1 > span:nth-of-type(2) { animation-delay: .29s; }
-      html.cp-entrance-ready .hero-copy > h1 > em { animation-delay: .45s; }
-      html.cp-entrance-ready .hero-copy > .hero-lede {
-        animation: cp-soft-enter .82s .58s cubic-bezier(.22,1,.36,1) both;
-      }
-      html.cp-entrance-ready .hero-copy > .hero-actions {
-        animation: cp-soft-enter .82s .7s cubic-bezier(.22,1,.36,1) both;
-      }
-      html.cp-entrance-ready .hero-copy > .trust-row {
-        animation: cp-soft-enter .82s .82s cubic-bezier(.22,1,.36,1) both;
-      }
-    }
-
-    html.cp-motion-ready .cp-reveal {
-      opacity: 0;
-      transform: translate3d(0, 24px, 0);
-      transition: opacity 1.15s cubic-bezier(.22,1,.36,1), transform 1.15s cubic-bezier(.22,1,.36,1);
-      transition-delay: var(--cp-reveal-delay, 0ms);
-    }
-    html.cp-motion-ready .cp-reveal.cp-visible { opacity: 1; transform: translate3d(0, 0, 0); }
-    .pill, .contact-link, .part-card, .hero-abcd-tile { transition-timing-function: cubic-bezier(.22,1,.36,1); }
-    @media (prefers-reduced-motion: reduce) {
-      html.cp-motion-ready .cp-reveal, .cp-reveal, .cp-reveal-left, .cp-reveal-right { opacity: 1 !important; transform: none !important; transition: none !important; }
-    }
-
   
     /* Mobile-only art direction; desktop geometry remains unchanged. */
     .mobile-header-cta{display:none}
@@ -317,16 +239,6 @@
     }
 
   
-    /* Mobile performance + refined motion: keep the first screen immediate and scrolling light.
-       Keep these shorter timings scoped to mobile so they cannot suppress or replace
-       the established desktop entrance animation system. */
-    @media (max-width: 760px) and (prefers-reduced-motion: no-preference) {
-      .site-header { animation: none; }
-      .hero-copy { animation: cp-soft-enter .58s cubic-bezier(.22,1,.36,1) both; }
-      .hero-visual { animation: cp-soft-enter .62s .04s cubic-bezier(.22,1,.36,1) both; }
-      .hero-bottom { animation: cp-soft-enter .5s .08s cubic-bezier(.22,1,.36,1) both; }
-      .cp-reveal { transition-duration: .38s; }
-    }
     @media (max-width: 760px) {
       /* Blur and deep shadows are decorative, but costly on some mobile GPUs. */
       .site-header { background: rgba(250,248,245,.98); backdrop-filter: none; -webkit-backdrop-filter: none; }
@@ -334,113 +246,44 @@
       .hero-abcd-panel { box-shadow: 0 8px 24px rgba(29,46,35,.06); }
       .hero-abcd-tile { box-shadow: 0 2px 8px rgba(29,46,35,.035); }
       .part-card, .benefit-card, .compare-table tr { box-shadow: 0 2px 10px rgba(29,46,35,.025); }
-      .cp-reveal { transform: translate3d(0,12px,0); transition-duration: .38s; }
       .carrier-marquee.is-ready .marquee-track { animation-duration: 42s; }
     }
-    @media (prefers-reduced-motion: reduce) {
-      .site-header, .hero-copy, .hero-visual, .hero-bottom { animation: none !important; }
-      .cp-reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
-    }
-
-
-    /* Mobile motion system: restrained stagger, soft depth, and no persistent GPU layers. */
-    @keyframes cp-mobile-arrive {
-      from { opacity: 0; transform: translate3d(0, 18px, 0) scale(.985); }
-      to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
-    }
-    @keyframes cp-tile-arrive {
-      from { opacity: 0; transform: translate3d(0, 13px, 0) scale(.965); }
-      to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
-    }
-    @media (max-width:760px) and (prefers-reduced-motion:no-preference) {
-      .hero-copy .eyebrow { animation: cp-mobile-arrive .62s .02s cubic-bezier(.2,.75,.25,1) both; }
-      .hero-copy h1 { animation: cp-mobile-arrive .72s .07s cubic-bezier(.2,.75,.25,1) both; }
-      .hero-copy .hero-lede { animation: cp-mobile-arrive .68s .14s cubic-bezier(.2,.75,.25,1) both; }
-      .hero-copy .hero-actions { animation: cp-mobile-arrive .68s .2s cubic-bezier(.2,.75,.25,1) both; }
-      .hero-copy .trust-row { animation: cp-mobile-arrive .65s .26s cubic-bezier(.2,.75,.25,1) both; }
-      .hero-abcd-panel { animation: cp-mobile-arrive .78s .12s cubic-bezier(.2,.75,.25,1) both; }
-      .hero-abcd-tile { animation: cp-tile-arrive .62s cubic-bezier(.2,.75,.25,1) both; }
-      .hero-abcd-tile:nth-child(1) { animation-delay: .22s; }
-      .hero-abcd-tile:nth-child(2) { animation-delay: .29s; }
-      .hero-abcd-tile:nth-child(3) { animation-delay: .36s; }
-      .hero-abcd-tile:nth-child(4) { animation-delay: .43s; }
-      .cp-reveal {
-        opacity: 0;
-        transform: translate3d(0, 18px, 0) scale(.99);
-        transition: opacity .62s cubic-bezier(.2,.75,.25,1), transform .72s cubic-bezier(.2,.75,.25,1);
-        transition-delay: var(--cp-reveal-delay, 0ms);
-      }
-      .cp-reveal.cp-visible { opacity: 1; transform: translate3d(0,0,0) scale(1); }
-      .part-card, .benefit-card, .hero-abcd-tile, .pill, .contact-link {
-        transition-timing-function: cubic-bezier(.2,.75,.25,1);
-      }
-      .part-card:active, .benefit-card:active { transform: scale(.985); }
-      .pill:active { transform: translateY(1px) scale(.985); }
-    }
-    @media (prefers-reduced-motion:reduce) {
-      .hero-copy .eyebrow, .hero-copy h1, .hero-copy .hero-lede,
-      .hero-copy .hero-actions, .hero-copy .trust-row, .hero-abcd-panel,
-      .hero-abcd-tile { animation:none!important; }
-    }
-
-    /* The desktop headline stagger is intentionally desktop-only. On phones, animate
-       each headline row separately instead of fading the entire h1 as one block. */
-    @media (max-width:760px) and (prefers-reduced-motion:no-preference) {
-      .hero-copy h1 { animation: none; }
-      .hero-copy h1 > span,
-      .hero-copy h1 > em {
-        display: inline-block;
-        animation: cp-line-enter .72s cubic-bezier(.22,1,.36,1) both;
-      }
-      .hero-copy h1 > span:nth-of-type(1) { animation-delay: .13s; }
-      .hero-copy h1 > span:nth-of-type(2) { animation-delay: .29s; }
-      .hero-copy h1 > em { animation-delay: .45s; }
-    }
-
     @media (max-width:760px) {
       .mobile-header-cta, .mobile-toggle { min-height:42px; }
     }
   
-    /* Cross-browser motion normalization: one mobile entrance per block, with reveal transitions
-       reserved for below-the-fold cards. This prevents competing transforms from stacked rules. */
-    @media (max-width:760px) and (prefers-reduced-motion:no-preference) {
-      .site-header,
-      .hero-copy,
-      .hero-visual,
-      .hero-bottom,
-      .hero-copy .eyebrow,
-      .hero-copy h1,
-      .hero-copy h1 > span,
-      .hero-copy h1 > em,
-      .hero-copy .hero-lede,
-      .hero-copy .hero-actions,
-      .hero-copy .trust-row,
-      .hero-abcd-panel,
-      .hero-abcd-tile {
-        animation: none !important;
-      }
-      .hero-copy .eyebrow { animation: cp-mobile-arrive .55s .04s cubic-bezier(.22,1,.36,1) both !important; }
-      .hero-copy h1 { animation: cp-mobile-arrive .68s .10s cubic-bezier(.22,1,.36,1) both !important; }
-      .hero-copy .hero-lede { animation: cp-mobile-arrive .62s .20s cubic-bezier(.22,1,.36,1) both !important; }
-      .hero-copy .hero-actions { animation: cp-mobile-arrive .62s .28s cubic-bezier(.22,1,.36,1) both !important; }
-      .hero-copy .trust-row { animation: cp-mobile-arrive .58s .36s cubic-bezier(.22,1,.36,1) both !important; }
-      .hero-visual { animation: cp-mobile-arrive .72s .12s cubic-bezier(.22,1,.36,1) both !important; }
-      .hero-bottom { animation: cp-mobile-arrive .55s .18s cubic-bezier(.22,1,.36,1) both !important; }
+
+    /* One cross-browser motion system: gentle row-by-row entrance and scroll reveals. */
+    @keyframes content-rise-in {
+      from { opacity: 0; transform: translate3d(0, 16px, 0); }
+      to { opacity: 1; transform: translate3d(0, 0, 0); }
     }
-    @media (max-width:760px) {
-      /* Avoid delayed/hidden content if an animation observer is slow or unavailable. */
-      html:not(.cp-motion-ready) .cp-reveal { opacity: 1; transform: none; }
+    .motion-item { opacity: 1; transform: none; }
+    html.motion-enabled .motion-item.motion-waiting {
+      opacity: 0;
+      transform: translate3d(0, 16px, 0);
     }
-    @media (prefers-reduced-motion:reduce) {
-      html, body { scroll-behavior: auto !important; }
-      .cp-reveal, .site-header, .hero-copy, .hero-visual, .hero-bottom,
-      .hero-copy *, .hero-abcd-panel, .hero-abcd-tile {
+    html.motion-enabled .motion-item.motion-shown {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+      transition: opacity .68s cubic-bezier(.22,1,.36,1), transform .68s cubic-bezier(.22,1,.36,1);
+    }
+    .hero-copy .eyebrow, .hero-copy h1 > span, .hero-copy h1 > em,
+    .hero-copy .hero-lede, .hero-copy .hero-actions, .hero-copy .trust-row,
+    .hero-visual, .hero-bottom {
+      animation: none;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto !important; }
+      .motion-item, html.motion-enabled .motion-item.motion-waiting,
+      html.motion-enabled .motion-item.motion-shown {
         opacity: 1 !important;
         transform: none !important;
         animation: none !important;
         transition: none !important;
       }
     }
+
 
 </style>
 </head>
@@ -714,98 +557,70 @@
   
 
 
-  <script id="cp-entrance-start">
-    (function () {
-      var root = document.documentElement;
-      var start = function () {
-        requestAnimationFrame(function () {
-          requestAnimationFrame(function () {
-            root.classList.add('cp-entrance-ready');
-            root.classList.remove('cp-entrance-pending');
-          });
-        });
-      };
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', start, { once: true });
-      } else {
-        start();
-      }
-    })();
-  </script>
+  <script id="page-motion">
+    (() => {
+      const root = document.documentElement;
+      const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduceMotion || !('IntersectionObserver' in window)) return;
 
-    <script id="cp-professional-motion">
-  (function () {
-    var motionPreference = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
-    if ((motionPreference && motionPreference.matches) || !('IntersectionObserver' in window)) return;
+      const selectors = [
+        '.hero-copy > .eyebrow', '.hero-copy > h1 > span', '.hero-copy > h1 > em',
+        '.hero-copy > .hero-lede', '.hero-copy > .hero-actions', '.hero-copy > .trust-row',
+        '.hero-visual', '.hero-bottom', '.section-heading', '.broker-photo-wrap',
+        '.broker-grid > div', '.part-card', '.hero-abcd-heading', '.hero-abcd-tile',
+        '.hero-abcd-note', '.benefit-card', '.feature-grid > .feature-image',
+        '.feature-copy > .eyebrow', '.feature-copy > .section-title', '.feature-copy > p',
+        '.feature-copy > .benefit-cards', '.feature-copy > .plan-chips',
+        '.feature-copy > .feature-aside', '.feature-copy > .pill',
+        '.compare-table-wrap', '.compare-footnote', '.contact-copy > *',
+        '.contact-reasons > div', '.lead-card', '.footer-grid > div', '.footer-bottom'
+      ].join(',');
+      const items = Array.from(document.querySelectorAll(selectors));
+      if (!items.length) return;
 
-    var desktop = window.matchMedia('(min-width: 761px)').matches;
-    /* Animate independent layout blocks only: nested reveal transforms caused
-       competing opacity/transform transitions and made debugging unreliable. */
-    var desktopTargets = [
-      '.section-heading',
-      '.broker-photo-wrap',
-      '.broker-grid > div',
-      '.part-card',
-      '.hero-abcd-tile',
-      '.hero-abcd-heading',
-      '.hero-abcd-note',
-      '.benefit-card',
-      '.feature-grid > .feature-image',
-      '.feature-copy > .eyebrow',
-      '.feature-copy > .section-title',
-      '.feature-copy > p',
-      '.feature-copy > .benefit-cards',
-      '.feature-copy > .plan-chips',
-      '.feature-copy > .feature-aside',
-      '.feature-copy > .pill',
-      '.compare-table-wrap',
-      '.compare-footnote',
-      '.contact-copy > *',
-      '.contact-reasons > div',
-      '.lead-card',
-      '.footer-grid > div',
-      '.footer-bottom'
-    ].join(', ');
-    var mobileTargets =
-      '.section-heading, .broker-photo-wrap, .part-card, .benefit-card, ' +
-      '.feature-grid > .feature-image, .feature-copy, .compare-table-wrap, ' +
-      '.contact-reasons > div, .lead-card, .footer-grid > div';
-
-    var targets = Array.prototype.slice.call(document.querySelectorAll(desktop ? desktopTargets : mobileTargets));
-    if (!targets.length) return;
-
-    var grouped = new Map();
-    targets.forEach(function (el) {
-      el.classList.add('cp-reveal');
-      var parent = el.parentElement || document.body;
-      var count = grouped.get(parent) || 0;
-      el.style.setProperty('--cp-reveal-delay', Math.min(count, desktop ? 4 : 2) * (desktop ? 75 : 55) + 'ms');
-      grouped.set(parent, count + 1);
-    });
-
-    var observer = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add('cp-visible');
-        observer.unobserve(entry.target);
+      const groups = new Map();
+      items.forEach(item => {
+        item.classList.add('motion-item');
+        const parent = item.parentElement || document.body;
+        const index = groups.get(parent) || 0;
+        item.style.transitionDelay = Math.min(index, 3) * 65 + 'ms';
+        groups.set(parent, index + 1);
       });
-    }, { rootMargin: '0px 0px -3% 0px', threshold: 0.04 });
 
-    targets.forEach(function (el) {
-      if (!desktop) {
-        var rect = el.getBoundingClientRect();
-        if (rect.top < window.innerHeight * 0.92 && rect.bottom > 0) {
-          el.classList.add('cp-visible');
-          return;
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.remove('motion-waiting');
+          entry.target.classList.add('motion-shown');
+          observer.unobserve(entry.target);
+        });
+      }, { rootMargin: '0px 0px -5% 0px', threshold: 0.03 });
+
+      const viewport = window.innerHeight || document.documentElement.clientHeight;
+      items.forEach(item => {
+        const rect = item.getBoundingClientRect();
+        if (rect.top < viewport * 0.92 && rect.bottom > 0) {
+          item.classList.add('motion-shown');
+        } else {
+          item.classList.add('motion-waiting');
+          observer.observe(item);
         }
-      }
-      observer.observe(el);
-    });
+      });
 
-    /* Hidden reveal styling is enabled only after the observer is fully wired.
-       If initialization fails earlier, page content remains visible by default. */
-    document.documentElement.classList.add('cp-motion-ready');
-  })();
+      /* Enable hidden states only after every target is observed; fail open if setup throws. */
+      root.classList.add('motion-enabled');
+
+      /* Hero rows arrive in sequence without animating a parent and its children together. */
+      items.filter(item => item.matches('.hero-copy > .eyebrow, .hero-copy > h1 > span, .hero-copy > h1 > em, .hero-copy > .hero-lede, .hero-copy > .hero-actions, .hero-copy > .trust-row, .hero-visual, .hero-bottom'))
+        .forEach((item, index) => {
+          if (item.classList.contains('motion-shown')) {
+            item.animate(
+              [{ opacity: 0, transform: 'translate3d(0, 14px, 0)' }, { opacity: 1, transform: 'translate3d(0, 0, 0)' }],
+              { duration: 620, delay: Math.min(index, 7) * 85, easing: 'cubic-bezier(.22,1,.36,1)' }
+            );
+          }
+        });
+    })();
   </script>
 
 </body>
