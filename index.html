@@ -430,7 +430,9 @@ html.ev-theme-dark .site-footer{background:#09170f}
         <svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true"><rect width="48" height="48" rx="12" fill="#0F5132"/><path d="M9 35 C17 35 17 18 25 18 S36 16 36 12" stroke="#FAF8F5" stroke-width="3.5" fill="none" stroke-linecap="round"/><circle cx="36" cy="12" r="3.4" fill="#D4AF37"/></svg>
         <span><p class="brand-name">Michael Dovsky</p><p class="brand-sub">Independent Broker</p></span>
       </a>
-      <nav class="nav"
+      <nav class="nav" aria-label="Main navigation">
+        <button data-scroll="parts" data-testid="nav-link-parts">Medicare Parts</button><button data-scroll="advantage" data-testid="nav-link-advantage">Advantage</button><button data-scroll="medigap" data-testid="nav-link-medigap">Medigap</button><button data-scroll="about" data-testid="nav-link-about">About</button>
+      </nav>
       <a class="header-phone" href="tel:+17604216826" data-testid="header-phone-link">760.421.6826</a>
       <a class="mobile-header-cta" href="#contact" data-testid="mobile-header-cta">Free consult</a>
       <button class="mobile-toggle" type="button" data-testid="mobile-menu-toggle" aria-label="Open navigation" aria-expanded="false" aria-controls="mobile-menu">☰</button>
