@@ -426,7 +426,26 @@ html.ev-theme-dark .ev-trigger{background:#22252b;color:#dec69c;border-color:#6b
 html.ev-theme-dark .ev-trigger:hover,html.ev-theme-dark .ev-trigger[aria-expanded="true"]{background:#c5a878;color:#17191d}
 @media(max-width:760px){.ev-trigger{max-width:125px;min-height:42px;padding:8px 10px;font-size:11px;white-space:normal}.ev-panel{top:80px;left:12px}.header-inner{gap:9px}.brand{min-width:0}.brand-name{white-space:nowrap}}
 @media(max-width:420px){.ev-trigger{max-width:96px;font-size:10px;padding:7px 8px}.brand-name{font-size:14px}}
-</style>
+
+    /* Dark theme readability pass: strengthen muted copy and controls across every section. */
+    html.ev-theme-dark{--muted:#dedbd4}
+    html.ev-theme-dark :is(.eyebrow,.section-intro,.hero-lede,.trust-row,.hero-bottom,.hero-bottom strong,.broker-copy,.credentials,.broker-note,.part-card .part-sub,.part-card ul,.feature-copy p,.feature-list li,.feature-aside,.plan-chips span,.compare-table tbody td,.compare-table tbody th,.compare-footnote,.contact-copy>p,.contact-reasons div,.lead-card>p,.field label,.form-disclaimer,.form-status,.footer-copy,.footer-contact,.footer-contact p,.disclosure,.footer-bottom,.marquee-track span,.hero-caption small,.parts-bubble,.part-card .part-details,.part-card .part-details .cost-list){color:#dedbd4}
+    html.ev-theme-dark :is(.hero h1,.section-title,.broker h2,.feature-copy h2,.part-card h3,.lead-card h3,.compare-table th,.compare-table td,.field label){color:#fffaf1}
+    html.ev-theme-dark :is(.nav button,.mobile-menu button,.header-phone,.text-link,.contact-link,.part-card .part-details a,.footer-bottom a){color:#e6c991}
+    html.ev-theme-dark :is(.brand-sub,.hero-bottom,.trust-row,.eyebrow,.part-card .part-sub,.compare-footnote,.lead-card>p,.footer-copy,.footer-contact p,.disclosure,.footer-bottom){font-weight:500}
+    html.ev-theme-dark :is(.hero-caption,.parts-bubble,.broker-note,.feature-aside,.part-card .part-details,.plan-chips span){background:#292c32;border-color:#55575d;color:#e3dfd7}
+    html.ev-theme-dark :is(.hero-caption strong,.parts-bubble strong,.part-card .part-sub strong,.broker-note b){color:#fffaf1}
+    html.ev-theme-dark :is(.field input,.field textarea,.ev-setting select){background:#17191d;color:#fffaf1;border-color:#777980}
+    html.ev-theme-dark :is(.field input::placeholder,.field textarea::placeholder){color:#b9b7b1;opacity:1}
+    html.ev-theme-dark :is(.field input:focus,.field textarea:focus,.ev-setting select:focus){border-color:#e6c991;box-shadow:0 0 0 3px rgba(230,201,145,.2)}
+    html.ev-theme-dark .form-disclaimer{color:#dedbd4!important}
+    html.ev-theme-dark .check{background:#3a3d42;color:#f0d7a7}
+    html.ev-theme-dark .part-card .text-link{background:#30333a;color:#f0d7a7}
+    html.ev-theme-dark .part-card .text-link:hover,html.ev-theme-dark .part-card .text-link[aria-expanded="true"]{background:#3a3d42}
+    html.ev-theme-dark .ev-trigger{color:#f0d7a7;border-color:#82765e}
+    html.ev-theme-dark .ev-close{color:#fffaf1;border-color:#777980}
+
+  </style>
 </head>
 <body>
   <header class="site-header">
