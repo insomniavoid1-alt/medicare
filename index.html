@@ -445,6 +445,58 @@ html.ev-theme-dark .ev-trigger:hover,html.ev-theme-dark .ev-trigger[aria-expande
     html.ev-theme-dark .ev-trigger{color:#f0d7a7;border-color:#82765e}
     html.ev-theme-dark .ev-close{color:#fffaf1;border-color:#777980}
 
+
+    /* Dark theme contrast repair: keep text and its surface in the same color system. */
+    html.ev-theme-dark :is(.hero-abcd-panel,.hero-abcd-tile,.hero-parts-chips>span,.benefit-card,.compare-table-wrap,.compare-table,.compare-table thead th,.lead-card,.mobile-toggle,.mobile-header-cta,.contact-link,.form-status){
+      background:#25282e;
+      color:#f5f3ef;
+      border-color:#50535a;
+    }
+    html.ev-theme-dark .hero-abcd-panel{
+      background:linear-gradient(145deg,#25282e 0%,#202329 100%);
+      border-color:#50535a;
+    }
+    html.ev-theme-dark :is(.hero-abcd-tile,.benefit-card){
+      box-shadow:0 4px 16px rgba(0,0,0,.18);
+    }
+    html.ev-theme-dark :is(.hero-abcd-name,.benefit-label,.hero-abcd-tile small,.hero-abcd-subtitle,.hero-abcd-note,.hero-parts-chips small,.benefit-card .feature-list li,.warning-list li){
+      color:#dedbd4;
+    }
+    html.ev-theme-dark :is(.hero-abcd-name,.benefit-card strong,.benefit-label){
+      color:#fffaf1;
+    }
+    html.ev-theme-dark .hero-parts-chips>span{
+      background:#292c32;
+      border-color:#50535a;
+    }
+    html.ev-theme-dark .compare-table thead th{
+      background:#292c32;
+      color:#fffaf1;
+    }
+    html.ev-theme-dark .compare-table tbody th,
+    html.ev-theme-dark .compare-table tbody td{
+      background:#22252b;
+      color:#dedbd4;
+      border-color:#41444b;
+    }
+    html.ev-theme-dark .form-status{
+      background:#26372f;
+      color:#e4f3e9;
+      border:1px solid #456451;
+    }
+    html.ev-theme-dark .mobile-header-cta{
+      color:#f0d7a7;
+      background:#25282e;
+      border-color:#82765e;
+    }
+    html.ev-theme-dark .contact-link{
+      color:#f0d7a7;
+      background:#25282e;
+    }
+    html.ev-theme-dark .warning-list li:before{color:#f0a28b}
+    html.ev-theme-dark .field input:disabled,
+    html.ev-theme-dark .field textarea:disabled{opacity:1;color:#dedbd4}
+    html.ev-theme-dark ::selection{background:#c5a878;color:#17191d}
   </style>
 </head>
 <body>
