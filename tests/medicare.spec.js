@@ -183,48 +183,38 @@ test('images have alternative text and mobile layout does not overflow horizonta
     expect(narrow.brand + narrow.cta + narrow.toggle).toBeLessThanOrEqual(narrow.viewport);
   }
 });
-test('Enhanced Visuals controls are discoverable, keyboard-operable, and preserve independent settings', async ({ page }) => {
+test('Reading and Theme controls offer only text size and light, maple, or dark themes', async ({ page }) => {
   const trigger = page.getByTestId('enhanced-visuals-toggle');
-  await expect(trigger).toBeVisible();
-  await expect(trigger).toHaveText('ENHANCED VISUALS');
+  await expect(trigger).toHaveText('READING & THEME');
   await trigger.focus();
-  await expect(trigger).toBeFocused();
   await trigger.press('Enter');
-  await expect(trigger).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.getByRole('region', { name: 'Enhanced Visuals' })).toBeVisible();
-  await expect(page.getByRole('status')).toContainText('Easy Read is on');
-  await page.getByLabel('Theme').selectOption('dark');
+  const panel = page.getByRole('region', { name: 'Reading & Theme' });
+  await expect(panel).toBeVisible();
+  await expect(page.getByLabel('Text size').locator('option')).toHaveCount(3);
+  await expect(page.getByLabel('Theme').locator('option')).toHaveCount(3);
+  await expect(page.getByLabel('Theme')).toContainText('Maple');
+  await expect(page.getByLabel('Contrast')).toHaveCount(0);
+  await expect(page.getByLabel('Motion')).toHaveCount(0);
+  await page.getByLabel('Theme').selectOption('maple');
   await page.getByLabel('Text size').selectOption('large');
-  await page.getByRole('button', { name: 'Turn Off Easy Read' }).click();
-  await expect(trigger).toHaveAttribute('aria-pressed', 'false');
-  await expect(page.locator('html')).toHaveClass(/ev-theme-dark/);
+  await expect(page.locator('html')).toHaveClass(/ev-theme-maple/);
   await expect(page.locator('html')).toHaveClass(/ev-text-large/);
-  await expect(page.locator('html')).not.toHaveClass(/ev-easy-read/);
   await page.reload();
-  await expect(page.locator('html')).toHaveClass(/ev-theme-dark/);
+  await expect(page.locator('html')).toHaveClass(/ev-theme-maple/);
   await expect(page.locator('html')).toHaveClass(/ev-text-large/);
 });
 
-test('Enhanced Visuals settings do not clear contact form entries and reset only preferences', async ({ page }) => {
+test('Reading preferences reset independently without clearing contact form entries', async ({ page }) => {
   await page.getByLabel('Full name').fill('Test Visitor');
   await page.getByLabel('Phone number').fill('7605550123');
   await page.getByLabel('Email address').fill('visitor@example.com');
   await page.getByTestId('enhanced-visuals-toggle').click();
   await page.getByLabel('Theme').selectOption('dark');
-  await page.getByLabel('Text size').selectOption('maximum');
+  await page.getByLabel('Text size').selectOption('extra-large');
   await page.getByRole('button', { name: 'Reset preferences' }).click();
   await expect(page.getByLabel('Full name')).toHaveValue('Test Visitor');
   await expect(page.getByLabel('Phone number')).toHaveValue('7605550123');
   await expect(page.getByLabel('Email address')).toHaveValue('visitor@example.com');
   await expect(page.locator('html')).not.toHaveClass(/ev-theme-dark/);
-  await expect(page.locator('html')).not.toHaveClass(/ev-text-maximum/);
-});
-
-test('Enhanced Visuals supports high contrast and reduced motion without removing existing motion code', async ({ page }) => {
-  await page.getByTestId('enhanced-visuals-toggle').click();
-  await page.getByLabel('Contrast').selectOption('high');
-  await page.getByLabel('Motion').selectOption('reduced');
-  await expect(page.locator('html')).toHaveClass(/ev-high-contrast/);
-  await expect(page.locator('html')).toHaveClass(/ev-motion-reduced/);
-  await expect(page.locator('#cp-professional-motion')).toBeAttached();
+  await expect(page.locator('html')).not.toHaveClass(/ev-text-extra-large/);
 });
