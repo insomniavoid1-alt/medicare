@@ -15,8 +15,26 @@ permissions:
   contents: read
 
 jobs:
-  playwright:
-    name: SEO and browser regression tests
+  crawler-validation:
+    name: SEO crawler validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate crawler metadata and sitemap
+        run: npm run test:seo
+      - name: Verify deployed preview crawler resources
+        env:
+          SEO_PREVIEW_URL: https://seo-crawler-structured-data.medicare-6pj.pages.dev
+        run: npm run test:seo:live
+
+  browser-regression:
+    name: Desktop and mobile browser regression tests
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
@@ -28,12 +46,6 @@ jobs:
           node-version: 22
       - name: Install test dependencies
         run: npm install --no-audit --no-fund
-      - name: Validate crawler metadata and sitemap
-        run: npm run test:seo
-      - name: Verify deployed preview crawler resources
-        env:
-          SEO_PREVIEW_URL: https://seo-crawler-structured-data.medicare-6pj.pages.dev
-        run: npm run test:seo:live
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
       - name: Run desktop and mobile browser tests
