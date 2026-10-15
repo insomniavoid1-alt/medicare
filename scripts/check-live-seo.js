@@ -7,7 +7,7 @@ const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 async function get(path) {
   const response = await fetch(baseUrl + path, {
     headers: { 'user-agent': 'MedicareCrawlerValidation/1.0' },
-    signal: AbortSignal.timeout(15000)
+    signal: AbortSignal.timeout(10000)
   });
   assert.equal(response.status, 200, baseUrl + path + ' returns HTTP 200 (got ' + response.status + ')');
   return response.text();
@@ -55,17 +55,17 @@ async function verify() {
 
 (async () => {
   let lastError;
-  for (let attempt = 1; attempt <= 10; attempt++) {
+  for (let attempt = 1; attempt <= 6; attempt++) {
     try {
       await verify();
       return;
     } catch (error) {
       lastError = error;
       console.error('Live SEO verification attempt ' + attempt + '/10 failed: ' + error.message);
-      if (attempt < 10) await wait(15000);
+      if (attempt < 6) await wait(10000);
     }
   }
-  console.error('Live SEO verification failed after 10 attempts.');
+  console.error('Live SEO verification failed after 6 attempts.');
   console.error(lastError);
   process.exitCode = 1;
 })();
