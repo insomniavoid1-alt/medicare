@@ -61,7 +61,7 @@ async function verify() {
       return;
     } catch (error) {
       lastError = error;
-      console.error('Live SEO verification attempt ' + attempt + '/10 failed: ' + error.message);
+      console.error('Live SEO verification attempt ' + attempt + '/6 failed: ' + error.message);
       if (attempt < 6) await wait(10000);
     }
   }
