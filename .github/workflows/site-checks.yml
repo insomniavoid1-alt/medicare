@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   playwright:
-    name: Playwright regression tests
+    name: SEO and browser regression tests
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
@@ -28,7 +28,13 @@ jobs:
           node-version: 22
       - name: Install test dependencies
         run: npm install --no-audit --no-fund
+      - name: Validate crawler metadata and sitemap
+        run: npm run test:seo
       - name: Install Chromium
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Chromium browser
         run: npx playwright install --with-deps chromium
       - name: Run desktop and mobile browser tests
         run: npm run test:e2e
