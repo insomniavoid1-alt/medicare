@@ -31,10 +31,6 @@ jobs:
       - name: Validate crawler metadata and sitemap
         run: npm run test:seo
       - name: Install Chromium
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - name: Install Chromium browser
         run: npx playwright install --with-deps chromium
       - name: Run desktop and mobile browser tests
         run: npm run test:e2e
