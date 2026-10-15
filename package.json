@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "description": "Static ClearPath Medicare website with browser regression tests",
   "scripts": {
+    "test:seo": "node scripts/check-seo.js",
     "test:e2e": "playwright test"
   },
   "devDependencies": {
