@@ -71,5 +71,9 @@ check(carlsbadJson['@graph'].some(item => item['@type'] === 'Service' && item.ar
 check(sitemapUrls.includes(carlsbadUrl), 'sitemap includes the Carlsbad landing page');
 check(/href=["']\/medicare-broker-carlsbad\.html["']/.test(encinitasHtml), 'Encinitas page links to Carlsbad');
 check(/href=["']\/medicare-broker-encinitas\.html["']/.test(carlsbadHtml), 'Carlsbad page links to Encinitas');
+check(encinitasHtml.includes('How should I check a plan if I use Scripps providers in Encinitas?'), 'Encinitas page includes locally relevant provider-verification guidance');
+check(encinitasHtml.includes('Does my Encinitas neighborhood determine which Medicare plans I can choose?'), 'Encinitas page explains service-area and ZIP-code relevance');
+check(carlsbadHtml.includes('What should Carlsbad residents verify about local doctors and facilities?'), 'Carlsbad page includes locally relevant provider-verification guidance');
+check(carlsbadHtml.includes('What if my doctors are spread across Carlsbad and nearby cities?'), 'Carlsbad page explains cross-city provider verification');
 
 console.log('SEO crawler checks passed.');
