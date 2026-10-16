@@ -75,5 +75,7 @@ check(encinitasHtml.includes('How should I check a plan if I use Scripps provide
 check(encinitasHtml.includes('Does my Encinitas neighborhood determine which Medicare plans I can choose?'), 'Encinitas page explains service-area and ZIP-code relevance');
 check(carlsbadHtml.includes('What should Carlsbad residents verify about local doctors and facilities?'), 'Carlsbad page includes locally relevant provider-verification guidance');
 check(carlsbadHtml.includes('What if my doctors are spread across Carlsbad and nearby cities?'), 'Carlsbad page explains cross-city provider verification');
+check(encinitasHtml.includes('Birthday Rule?'), 'Encinitas page includes California-specific Medigap timing guidance');
+check(carlsbadHtml.includes('before leaving employer coverage?'), 'Carlsbad page includes employer coverage transition guidance');
 
 console.log('SEO crawler checks passed.');
