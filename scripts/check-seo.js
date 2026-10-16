@@ -75,8 +75,8 @@ check(encinitasHtml.includes('How should I check a plan if I use Scripps provide
 check(encinitasHtml.includes('Does my Encinitas neighborhood determine which Medicare plans I can choose?'), 'Encinitas page explains service-area and ZIP-code relevance');
 check(carlsbadHtml.includes('What should Carlsbad residents verify about local doctors and facilities?'), 'Carlsbad page includes locally relevant provider-verification guidance');
 check(carlsbadHtml.includes('What if my doctors are spread across Carlsbad and nearby cities?'), 'Carlsbad page explains cross-city provider verification');
-check(encinitasHtml.includes('Birthday Rule?'), 'Encinitas page includes California-specific Medigap timing guidance');
-check(carlsbadHtml.includes('before leaving employer coverage?'), 'Carlsbad page includes employer coverage transition guidance');
+check(encinitasHtml.includes('Birthday Rule?') && carlsbadHtml.includes('Birthday Rule?'), 'both city pages include California-specific Medigap timing guidance');
+check(encinitasHtml.includes('before leaving employer coverage?') && carlsbadHtml.includes('before leaving employer coverage?'), 'both city pages include employer coverage transition guidance');
 check((encinitasHtml.match(/href=["']\/#contact["']/g) || []).length >= 3, 'Encinitas consultation links route to the homepage contact form');
 check((carlsbadHtml.match(/href=["']\/#contact["']/g) || []).length >= 3, 'Carlsbad consultation links route to the homepage contact form');
 check(encinitasHtml.includes('href="tel:+17604216826"') && carlsbadHtml.includes('href="tel:+17604216826"'), 'both local pages have the broker click-to-call number');
