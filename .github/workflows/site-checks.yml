@@ -59,3 +59,32 @@ jobs:
             playwright-report/
             test-results/
           if-no-files-found: ignore
+
+  baseline-browser-regression:
+    name: Browser regression baseline on main
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Check out current main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install test dependencies
+        run: npm install --no-audit --no-fund
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run browser tests against main baseline
+        run: npm run test:e2e
+      - name: Upload baseline Playwright report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-main-baseline-report
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
