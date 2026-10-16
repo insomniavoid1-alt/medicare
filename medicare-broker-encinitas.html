@@ -15,22 +15,34 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "WebPage",
-    "@id": "https://findtherightplan.com/medicare-broker-encinitas.html#webpage",
-    "url": "https://findtherightplan.com/medicare-broker-encinitas.html",
-    "name": "Medicare Broker in Encinitas, CA",
-    "description": "Independent Medicare guidance for Encinitas and nearby North County San Diego communities.",
-    "inLanguage": "en-US",
-    "about": {"@id": "https://findtherightplan.com/#michael-dovsky"},
-    "publisher": {"@id": "https://findtherightplan.com/#michael-dovsky"},
-    "areaServed": {
-      "@type": "City",
-      "name": "Encinitas",
-      "containedInPlace": {
-        "@type": "AdministrativeArea",
-        "name": "San Diego County, California"
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": "https://findtherightplan.com/medicare-broker-encinitas.html#webpage",
+        "url": "https://findtherightplan.com/medicare-broker-encinitas.html",
+        "name": "Medicare Broker in Encinitas, CA",
+        "description": "Independent Medicare guidance for Encinitas and nearby North County San Diego communities.",
+        "inLanguage": "en-US",
+        "about": {"@id": "https://findtherightplan.com/medicare-broker-encinitas.html#service"},
+        "publisher": {"@id": "https://findtherightplan.com/#michael-dovsky"}
+      },
+      {
+        "@type": "Service",
+        "@id": "https://findtherightplan.com/medicare-broker-encinitas.html#service",
+        "name": "Independent Medicare broker guidance in Encinitas",
+        "serviceType": "Medicare broker guidance and plan comparison",
+        "url": "https://findtherightplan.com/medicare-broker-encinitas.html",
+        "provider": {"@id": "https://findtherightplan.com/#michael-dovsky"},
+        "areaServed": {
+          "@type": "City",
+          "name": "Encinitas",
+          "containedInPlace": {
+            "@type": "AdministrativeArea",
+            "name": "San Diego County, California"
+          }
+        }
       }
-    }
+    ]
   }
   </script>
   <style>
