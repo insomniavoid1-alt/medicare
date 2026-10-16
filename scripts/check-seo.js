@@ -61,9 +61,9 @@ check(sitemapUrls.includes(encinitasUrl), 'sitemap includes the Encinitas landin
 
 const carlsbadUrl = canonical + 'medicare-broker-carlsbad.html';
 check(carlsbadHtml.includes('<link rel="canonical" href="' + carlsbadUrl + '">'), 'Carlsbad page has its own canonical URL');
-check(/<title>\\s*Medicare Broker in Carlsbad, CA\\s*\\|\\s*Find the Right Plan\\s*<\\/title>/i.test(carlsbadHtml), 'Carlsbad page has a local search title');
+check(/<title>\s*Medicare Broker in Carlsbad, CA\s*\|\s*Find the Right Plan\s*<\/title>/i.test(carlsbadHtml), 'Carlsbad page has a local search title');
 check(/<meta name="description" content="[^"]+">/i.test(carlsbadHtml), 'Carlsbad page has a meta description');
-const carlsbadJsonMatch = carlsbadHtml.match(/<script type="application\\/ld\\+json">([\\s\\S]*?)<\\/script>/i);
+const carlsbadJsonMatch = carlsbadHtml.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/i);
 check(Boolean(carlsbadJsonMatch), 'Carlsbad page includes structured data');
 const carlsbadJson = JSON.parse(carlsbadJsonMatch[1]);
 check(carlsbadJson['@context'] === 'https://schema.org' && Array.isArray(carlsbadJson['@graph']), 'Carlsbad structured data uses a Schema.org graph');
