@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict');
 
-const baseUrl = (process.env.SEO_PREVIEW_URL || 'https://seo-encinitas-local-landing-page.medicare-6pj.pages.dev').replace(/\/$/, '');
+const baseUrl = (process.env.SEO_PREVIEW_URL || 'https://seo-encinitas-local-landing.medicare-6pj.pages.dev').replace(/\/$/, '');
 const canonical = 'https://findtherightplan.com/';
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
