@@ -165,11 +165,26 @@ test('images have alternative text and mobile layout does not overflow horizonta
     await expect.poll(async () => page.locator('.hero-grid').evaluate(el => getComputedStyle(el).gridTemplateColumns.split(' ').length)).toBe(2);
     await expect.poll(async () => page.locator('.compare-table').evaluate(el => getComputedStyle(el).display)).toBe('table');
   }
-  const dimensions = await page.evaluate(() => ({
-    viewport: document.documentElement.clientWidth,
-    content: document.documentElement.scrollWidth
-  }));
-  expect(dimensions.content).toBeLessThanOrEqual(dimensions.viewport + 1);
+  const dimensions = await page.evaluate(() => {
+    const viewport = document.documentElement.clientWidth;
+    const content = document.documentElement.scrollWidth;
+    const overflow = [...document.querySelectorAll('body *')].map(el => {
+      const rect = el.getBoundingClientRect();
+      return {
+        tag: el.tagName.toLowerCase(),
+        className: typeof el.className === 'string' ? el.className : '',
+        id: el.id,
+        left: Math.round(rect.left),
+        right: Math.round(rect.right),
+        width: Math.round(rect.width)
+      };
+    }).filter(item => item.width > 0 && (item.left < -1 || item.right > viewport + 1))
+      .sort((a, b) => Math.max(b.right - viewport, -b.left) - Math.max(a.right - viewport, -a.left))
+      .slice(0, 12);
+    return { viewport, content, overflow };
+  });
+  expect(dimensions.content, 'Horizontal overflow elements: ' + JSON.stringify(dimensions.overflow))
+    .toBeLessThanOrEqual(dimensions.viewport + 1);
   if (isMobile) {
     await page.setViewportSize({ width: 320, height: 800 });
     const narrow = await page.evaluate(() => ({
@@ -179,7 +194,8 @@ test('images have alternative text and mobile layout does not overflow horizonta
       cta: document.querySelector('.mobile-header-cta').getBoundingClientRect().width,
       toggle: document.querySelector('.mobile-toggle').getBoundingClientRect().width
     }));
-    expect(narrow.content).toBeLessThanOrEqual(narrow.viewport + 1);
+    expect(narrow.content, 'Narrow viewport overflow: ' + JSON.stringify(narrow))
+      .toBeLessThanOrEqual(narrow.viewport + 1);
     expect(narrow.brand + narrow.cta + narrow.toggle).toBeLessThanOrEqual(narrow.viewport);
   }
 });
@@ -191,11 +207,11 @@ test('Reading and Theme controls offer only text size and light, maple, or dark 
   const panel = page.getByRole('region', { name: 'Reading & Theme' });
   await expect(panel).toBeVisible();
   await expect(page.getByLabel('Text size').locator('option')).toHaveCount(3);
-  await expect(page.getByLabel('Theme').locator('option')).toHaveCount(3);
-  await expect(page.getByLabel('Theme')).toContainText('Maple');
+  await expect(page.getByLabel('Theme', { exact: true }).locator('option')).toHaveCount(3);
+  await expect(page.getByLabel('Theme', { exact: true })).toContainText('Maple');
   await expect(page.getByLabel('Contrast')).toHaveCount(0);
   await expect(page.getByLabel('Motion')).toHaveCount(0);
-  await page.getByLabel('Theme').selectOption('maple');
+  await page.getByLabel('Theme', { exact: true }).selectOption('maple');
   await page.getByLabel('Text size').selectOption('large');
   await expect(page.locator('html')).toHaveClass(/ev-theme-maple/);
   await expect(page.locator('html')).toHaveClass(/ev-text-large/);
@@ -209,7 +225,7 @@ test('Reading preferences reset independently without clearing contact form entr
   await page.getByLabel('Phone number').fill('7605550123');
   await page.getByLabel('Email address').fill('visitor@example.com');
   await page.getByTestId('enhanced-visuals-toggle').click();
-  await page.getByLabel('Theme').selectOption('dark');
+  await page.getByLabel('Theme', { exact: true }).selectOption('dark');
   await page.getByLabel('Text size').selectOption('extra-large');
   await page.getByRole('button', { name: 'Reset preferences' }).click();
   await expect(page.getByLabel('Full name')).toHaveValue('Test Visitor');
