@@ -71,8 +71,8 @@ async function verify() {
   assert.ok(encinitasHtml.includes('Does my Encinitas neighborhood determine which Medicare plans I can choose?'), 'live Encinitas page explains service-area and ZIP-code relevance');
   assert.ok(carlsbadHtml.includes('What should Carlsbad residents verify about local doctors and facilities?'), 'live Carlsbad page includes locally relevant provider-verification guidance');
   assert.ok(carlsbadHtml.includes('What if my doctors are spread across Carlsbad and nearby cities?'), 'live Carlsbad page explains cross-city provider verification');
-  assert.ok(encinitasHtml.includes('Birthday Rule?'), 'live Encinitas page includes California-specific Medigap timing guidance');
-  assert.ok(carlsbadHtml.includes('before leaving employer coverage?'), 'live Carlsbad page includes employer coverage transition guidance');
+  assert.ok(encinitasHtml.includes('Birthday Rule?') && carlsbadHtml.includes('Birthday Rule?'), 'live city pages include California-specific Medigap timing guidance');
+  assert.ok(encinitasHtml.includes('before leaving employer coverage?') && carlsbadHtml.includes('before leaving employer coverage?'), 'live city pages include employer coverage transition guidance');
   assert.ok((encinitasHtml.match(/href=["']\/#contact["']/g) || []).length >= 3, 'live Encinitas consultation links route to the homepage contact form');
   assert.ok((carlsbadHtml.match(/href=["']\/#contact["']/g) || []).length >= 3, 'live Carlsbad consultation links route to the homepage contact form');
   assert.ok(encinitasHtml.includes('href="tel:+17604216826"') && carlsbadHtml.includes('href="tel:+17604216826"'), 'live local pages have the broker click-to-call number');
