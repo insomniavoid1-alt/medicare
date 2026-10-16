@@ -5,6 +5,7 @@ const assert = require('node:assert/strict');
 const root = path.resolve(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const encinitasHtml = fs.readFileSync(path.join(root, 'medicare-broker-encinitas.html'), 'utf8');
+const carlsbadHtml = fs.readFileSync(path.join(root, 'medicare-broker-carlsbad.html'), 'utf8');
 const robots = fs.readFileSync(path.join(root, 'robots.txt'), 'utf8');
 const sitemap = fs.readFileSync(path.join(root, 'sitemap.xml'), 'utf8');
 const canonical = 'https://findtherightplan.com/';
@@ -57,5 +58,16 @@ const encinitasJson = JSON.parse(encinitasJsonMatch[1]);
 check(encinitasJson['@context'] === 'https://schema.org' && Array.isArray(encinitasJson['@graph']), 'Encinitas structured data uses a Schema.org graph');
 check(encinitasJson['@graph'].some(item => item['@type'] === 'Service' && item.areaServed && item.areaServed.name === 'Encinitas'), 'Encinitas structured data identifies the local service area');
 check(sitemapUrls.includes(encinitasUrl), 'sitemap includes the Encinitas landing page');
+
+const carlsbadUrl = canonical + 'medicare-broker-carlsbad.html';
+check(carlsbadHtml.includes('<link rel="canonical" href="' + carlsbadUrl + '">'), 'Carlsbad page has its own canonical URL');
+check(/<title>\\s*Medicare Broker in Carlsbad, CA\\s*\\|\\s*Find the Right Plan\\s*<\\/title>/i.test(carlsbadHtml), 'Carlsbad page has a local search title');
+check(/<meta name="description" content="[^"]+">/i.test(carlsbadHtml), 'Carlsbad page has a meta description');
+const carlsbadJsonMatch = carlsbadHtml.match(/<script type="application\\/ld\\+json">([\\s\\S]*?)<\\/script>/i);
+check(Boolean(carlsbadJsonMatch), 'Carlsbad page includes structured data');
+const carlsbadJson = JSON.parse(carlsbadJsonMatch[1]);
+check(carlsbadJson['@context'] === 'https://schema.org' && Array.isArray(carlsbadJson['@graph']), 'Carlsbad structured data uses a Schema.org graph');
+check(carlsbadJson['@graph'].some(item => item['@type'] === 'Service' && item.areaServed && item.areaServed.name === 'Carlsbad'), 'Carlsbad structured data identifies the local service area');
+check(sitemapUrls.includes(carlsbadUrl), 'sitemap includes the Carlsbad landing page');
 
 console.log('SEO crawler checks passed.');
