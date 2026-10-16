@@ -65,6 +65,8 @@ async function verify() {
   assert.equal(carlsbadBlocks.length, 1, 'live Carlsbad page exposes one JSON-LD block');
   const carlsbadData = JSON.parse(carlsbadBlocks[0][1]);
   assert.ok(carlsbadData['@graph']?.some(item => item['@type'] === 'Service' && item.areaServed?.name === 'Carlsbad'), 'live Carlsbad structured data identifies its service area');
+  assert.match(encinitasHtml, /href=["']\/medicare-broker-carlsbad\.html["']/, 'live Encinitas page links to Carlsbad');
+  assert.match(carlsbadHtml, /href=["']\/medicare-broker-encinitas\.html["']/, 'live Carlsbad page links to Encinitas');
 
   console.log('PASS live preview returns HTTP 200 for homepage, robots.txt, and sitemap.xml');
   console.log('PASS live HTML metadata and JSON-LD identify the canonical site and Michael Dovsky');
