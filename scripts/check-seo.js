@@ -4,6 +4,7 @@ const assert = require('node:assert/strict');
 
 const root = path.resolve(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+const encinitasHtml = fs.readFileSync(path.join(root, 'medicare-broker-encinitas.html'), 'utf8');
 const robots = fs.readFileSync(path.join(root, 'robots.txt'), 'utf8');
 const sitemap = fs.readFileSync(path.join(root, 'sitemap.xml'), 'utf8');
 const canonical = 'https://findtherightplan.com/';
@@ -46,6 +47,16 @@ check(/<urlset\b[^>]*xmlns=["']http:\/\/www\.sitemaps\.org\/schemas\/sitemap\/0\
 const sitemapUrls = [...sitemap.matchAll(/<loc>\s*([^<]+)\s*<\/loc>/gi)].map(match => match[1].trim());
 check(sitemapUrls.length > 0, 'sitemap contains at least one URL');
 check(sitemapUrls.includes(canonical), 'sitemap includes the canonical homepage URL');
+const encinitasUrl = canonical + 'medicare-broker-encinitas.html';
+check(encinitasHtml.includes('<link rel="canonical" href="' + encinitasUrl + '">'), 'Encinitas page has its own canonical URL');
+check(/<title>\\s*Medicare Broker in Encinitas, CA\\s*\\|\\s*Find the Right Plan\\s*<\\/title>/i.test(encinitasHtml), 'Encinitas page has a local search title');
+check(/<meta name="description" content="[^"]+">/i.test(encinitasHtml), 'Encinitas page has a meta description');
+const encinitasJsonMatch = encinitasHtml.match(/<script type="application\\/ld\\+json">([\\s\\S]*?)<\\/script>/i);
+check(Boolean(encinitasJsonMatch), 'Encinitas page includes structured data');
+const encinitasJson = JSON.parse(encinitasJsonMatch[1]);
+check(encinitasJson['@context'] === 'https://schema.org' && Array.isArray(encinitasJson['@graph']), 'Encinitas structured data uses a Schema.org graph');
+check(encinitasJson['@graph'].some(item => item['@type'] === 'Service' && item.areaServed && item.areaServed.name === 'Encinitas'), 'Encinitas structured data identifies the local service area');
+check(sitemapUrls.includes(encinitasUrl), 'sitemap includes the Encinitas landing page');
 check(sitemapUrls.every(url => url.startsWith('https://findtherightplan.com/')), 'sitemap URLs all use the production HTTPS domain');
 
 console.log('SEO crawler checks passed.');
