@@ -73,6 +73,10 @@ async function verify() {
   assert.ok(carlsbadHtml.includes('What if my doctors are spread across Carlsbad and nearby cities?'), 'live Carlsbad page explains cross-city provider verification');
   assert.ok(encinitasHtml.includes('Birthday Rule?'), 'live Encinitas page includes California-specific Medigap timing guidance');
   assert.ok(carlsbadHtml.includes('before leaving employer coverage?'), 'live Carlsbad page includes employer coverage transition guidance');
+  assert.ok((encinitasHtml.match(/href=["']\/#contact["']/g) || []).length >= 3, 'live Encinitas consultation links route to the homepage contact form');
+  assert.ok((carlsbadHtml.match(/href=["']\/#contact["']/g) || []).length >= 3, 'live Carlsbad consultation links route to the homepage contact form');
+  assert.ok(encinitasHtml.includes('href="tel:+17604216826"') && carlsbadHtml.includes('href="tel:+17604216826"'), 'live local pages have the broker click-to-call number');
+  assert.ok(html.includes('id="lead-form"') && html.includes('id="lead-name"') && html.includes('id="lead-phone"') && html.includes('id="lead-email"'), 'live homepage has the consultation lead form and core contact fields');
 
   console.log('PASS live preview returns HTTP 200 for homepage, robots.txt, and sitemap.xml');
   console.log('PASS live HTML metadata and JSON-LD identify the canonical site and Michael Dovsky');
