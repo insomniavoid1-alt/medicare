@@ -16,6 +16,7 @@ async function get(path) {
 async function verify() {
   const html = await get('/');
   const encinitasHtml = await get('/medicare-broker-encinitas.html');
+  const carlsbadHtml = await get('/medicare-broker-carlsbad.html');
   const robots = await get('/robots.txt');
   const sitemap = await get('/sitemap.xml');
 
@@ -55,6 +56,15 @@ async function verify() {
   assert.equal(localBlocks.length, 1, 'live Encinitas page exposes one JSON-LD block');
   const localData = JSON.parse(localBlocks[0][1]);
   assert.ok(localData['@graph']?.some(item => item['@type'] === 'Service' && item.areaServed?.name === 'Encinitas'), 'live Encinitas structured data identifies its service area');
+
+  const carlsbadUrl = canonical + 'medicare-broker-carlsbad.html';
+  assert.ok(urls.includes(carlsbadUrl), 'live sitemap contains the Carlsbad landing page');
+  assert.match(carlsbadHtml, /<link rel=["']canonical["'] href=["']https:\\/\\/findtherightplan\\.com\\/medicare-broker-carlsbad\\.html["']/i, 'live Carlsbad page has its own canonical URL');
+  assert.match(carlsbadHtml, /<title>\\s*Medicare Broker in Carlsbad, CA\\s*\\|\\s*Find the Right Plan\\s*<\\/title>/i, 'live Carlsbad page has a local title');
+  const carlsbadBlocks = [...carlsbadHtml.matchAll(/<script\\b[^>]*type=["']application\\/ld\\+json["'][^>]*>([\\s\\S]*?)<\\/script>/gi)];
+  assert.equal(carlsbadBlocks.length, 1, 'live Carlsbad page exposes one JSON-LD block');
+  const carlsbadData = JSON.parse(carlsbadBlocks[0][1]);
+  assert.ok(carlsbadData['@graph']?.some(item => item['@type'] === 'Service' && item.areaServed?.name === 'Carlsbad'), 'live Carlsbad structured data identifies its service area');
 
   console.log('PASS live preview returns HTTP 200 for homepage, robots.txt, and sitemap.xml');
   console.log('PASS live HTML metadata and JSON-LD identify the canonical site and Michael Dovsky');
