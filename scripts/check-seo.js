@@ -77,5 +77,9 @@ check(carlsbadHtml.includes('What should Carlsbad residents verify about local d
 check(carlsbadHtml.includes('What if my doctors are spread across Carlsbad and nearby cities?'), 'Carlsbad page explains cross-city provider verification');
 check(encinitasHtml.includes('Birthday Rule?'), 'Encinitas page includes California-specific Medigap timing guidance');
 check(carlsbadHtml.includes('before leaving employer coverage?'), 'Carlsbad page includes employer coverage transition guidance');
+check((encinitasHtml.match(/href=["']\/#contact["']/g) || []).length >= 3, 'Encinitas consultation links route to the homepage contact form');
+check((carlsbadHtml.match(/href=["']\/#contact["']/g) || []).length >= 3, 'Carlsbad consultation links route to the homepage contact form');
+check(encinitasHtml.includes('href="tel:+17604216826"') && carlsbadHtml.includes('href="tel:+17604216826"'), 'both local pages have the broker click-to-call number');
+check(html.includes('id="lead-form"') && html.includes('id="lead-name"') && html.includes('id="lead-phone"') && html.includes('id="lead-email"'), 'homepage has the consultation lead form and core contact fields');
 
 console.log('SEO crawler checks passed.');
