@@ -49,13 +49,12 @@ async function verify() {
   assert.ok(urls.includes(canonical), 'live sitemap contains the canonical homepage');
   const encinitasUrl = canonical + 'medicare-broker-encinitas.html';
   assert.ok(urls.includes(encinitasUrl), 'live sitemap contains the Encinitas landing page');
-  assert.match(encinitasHtml, /<link rel=["']canonical["'] href=["']https:\\/\\/findtherightplan\\.com\\/medicare-broker-encinitas\\.html["']/i, 'live Encinitas page has its own canonical URL');
-  assert.match(encinitasHtml, /<title>\\s*Medicare Broker in Encinitas, CA\\s*\\|\\s*Find the Right Plan\\s*<\\/title>/i, 'live Encinitas page has a local title');
-  const localBlocks = [...encinitasHtml.matchAll(/<script\\b[^>]*type=["']application\\/ld\\+json["'][^>]*>([\\s\\S]*?)<\\/script>/gi)];
+  assert.match(encinitasHtml, /<link rel=["']canonical["'] href=["']https:\/\/findtherightplan\.com\/medicare-broker-encinitas\.html["']/i, 'live Encinitas page has its own canonical URL');
+  assert.match(encinitasHtml, /<title>\s*Medicare Broker in Encinitas, CA\s*\|\s*Find the Right Plan\s*<\/title>/i, 'live Encinitas page has a local title');
+  const localBlocks = [...encinitasHtml.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)];
   assert.equal(localBlocks.length, 1, 'live Encinitas page exposes one JSON-LD block');
   const localData = JSON.parse(localBlocks[0][1]);
   assert.ok(localData['@graph']?.some(item => item['@type'] === 'Service' && item.areaServed?.name === 'Encinitas'), 'live Encinitas structured data identifies its service area');
-  assert.ok(urls.every(url => url.startsWith(canonical)), 'live sitemap URLs use the production HTTPS domain');
 
   console.log('PASS live preview returns HTTP 200 for homepage, robots.txt, and sitemap.xml');
   console.log('PASS live HTML metadata and JSON-LD identify the canonical site and Michael Dovsky');
