@@ -71,6 +71,8 @@ async function verify() {
   assert.ok(encinitasHtml.includes('Does my Encinitas neighborhood determine which Medicare plans I can choose?'), 'live Encinitas page explains service-area and ZIP-code relevance');
   assert.ok(carlsbadHtml.includes('What should Carlsbad residents verify about local doctors and facilities?'), 'live Carlsbad page includes locally relevant provider-verification guidance');
   assert.ok(carlsbadHtml.includes('What if my doctors are spread across Carlsbad and nearby cities?'), 'live Carlsbad page explains cross-city provider verification');
+  assert.ok(encinitasHtml.includes('Birthday Rule?'), 'live Encinitas page includes California-specific Medigap timing guidance');
+  assert.ok(carlsbadHtml.includes('before leaving employer coverage?'), 'live Carlsbad page includes employer coverage transition guidance');
 
   console.log('PASS live preview returns HTTP 200 for homepage, robots.txt, and sitemap.xml');
   console.log('PASS live HTML metadata and JSON-LD identify the canonical site and Michael Dovsky');
