@@ -2,7 +2,7 @@ name: Medicare site checks for Cloudflare Pages
 
 on:
   push:
-    branches: [main]
+    branches: [main, seo/encinitas-local-landing-page]
   pull_request:
     branches: [main]
   workflow_dispatch:
