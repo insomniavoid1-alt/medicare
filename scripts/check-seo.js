@@ -69,5 +69,7 @@ const carlsbadJson = JSON.parse(carlsbadJsonMatch[1]);
 check(carlsbadJson['@context'] === 'https://schema.org' && Array.isArray(carlsbadJson['@graph']), 'Carlsbad structured data uses a Schema.org graph');
 check(carlsbadJson['@graph'].some(item => item['@type'] === 'Service' && item.areaServed && item.areaServed.name === 'Carlsbad'), 'Carlsbad structured data identifies the local service area');
 check(sitemapUrls.includes(carlsbadUrl), 'sitemap includes the Carlsbad landing page');
+check(/href=["']\/medicare-broker-carlsbad\.html["']/.test(encinitasHtml), 'Encinitas page links to Carlsbad');
+check(/href=["']\/medicare-broker-encinitas\.html["']/.test(carlsbadHtml), 'Carlsbad page links to Encinitas');
 
 console.log('SEO crawler checks passed.');
