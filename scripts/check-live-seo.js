@@ -67,6 +67,10 @@ async function verify() {
   assert.ok(carlsbadData['@graph']?.some(item => item['@type'] === 'Service' && item.areaServed?.name === 'Carlsbad'), 'live Carlsbad structured data identifies its service area');
   assert.match(encinitasHtml, /href=["']\/medicare-broker-carlsbad\.html["']/, 'live Encinitas page links to Carlsbad');
   assert.match(carlsbadHtml, /href=["']\/medicare-broker-encinitas\.html["']/, 'live Carlsbad page links to Encinitas');
+  assert.ok(encinitasHtml.includes('How should I check a plan if I use Scripps providers in Encinitas?'), 'live Encinitas page includes locally relevant provider-verification guidance');
+  assert.ok(encinitasHtml.includes('Does my Encinitas neighborhood determine which Medicare plans I can choose?'), 'live Encinitas page explains service-area and ZIP-code relevance');
+  assert.ok(carlsbadHtml.includes('What should Carlsbad residents verify about local doctors and facilities?'), 'live Carlsbad page includes locally relevant provider-verification guidance');
+  assert.ok(carlsbadHtml.includes('What if my doctors are spread across Carlsbad and nearby cities?'), 'live Carlsbad page explains cross-city provider verification');
 
   console.log('PASS live preview returns HTTP 200 for homepage, robots.txt, and sitemap.xml');
   console.log('PASS live HTML metadata and JSON-LD identify the canonical site and Michael Dovsky');
