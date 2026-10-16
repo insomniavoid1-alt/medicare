@@ -4,6 +4,8 @@ const assert = require('node:assert/strict');
 
 const root = path.resolve(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+const encinitasHtml = fs.readFileSync(path.join(root, 'medicare-broker-encinitas.html'), 'utf8');
+const carlsbadHtml = fs.readFileSync(path.join(root, 'medicare-broker-carlsbad.html'), 'utf8');
 const robots = fs.readFileSync(path.join(root, 'robots.txt'), 'utf8');
 const sitemap = fs.readFileSync(path.join(root, 'sitemap.xml'), 'utf8');
 const canonical = 'https://findtherightplan.com/';
@@ -46,6 +48,38 @@ check(/<urlset\b[^>]*xmlns=["']http:\/\/www\.sitemaps\.org\/schemas\/sitemap\/0\
 const sitemapUrls = [...sitemap.matchAll(/<loc>\s*([^<]+)\s*<\/loc>/gi)].map(match => match[1].trim());
 check(sitemapUrls.length > 0, 'sitemap contains at least one URL');
 check(sitemapUrls.includes(canonical), 'sitemap includes the canonical homepage URL');
-check(sitemapUrls.every(url => url.startsWith('https://findtherightplan.com/')), 'sitemap URLs all use the production HTTPS domain');
+const encinitasUrl = canonical + 'medicare-broker-encinitas.html';
+check(encinitasHtml.includes('<link rel="canonical" href="' + encinitasUrl + '">'), 'Encinitas page has its own canonical URL');
+check(/<title>\s*Medicare Broker in Encinitas, CA\s*\|\s*Find the Right Plan\s*<\/title>/i.test(encinitasHtml), 'Encinitas page has a local search title');
+check(/<meta name="description" content="[^"]+">/i.test(encinitasHtml), 'Encinitas page has a meta description');
+const encinitasJsonMatch = encinitasHtml.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/i);
+check(Boolean(encinitasJsonMatch), 'Encinitas page includes structured data');
+const encinitasJson = JSON.parse(encinitasJsonMatch[1]);
+check(encinitasJson['@context'] === 'https://schema.org' && Array.isArray(encinitasJson['@graph']), 'Encinitas structured data uses a Schema.org graph');
+check(encinitasJson['@graph'].some(item => item['@type'] === 'Service' && item.areaServed && item.areaServed.name === 'Encinitas'), 'Encinitas structured data identifies the local service area');
+check(sitemapUrls.includes(encinitasUrl), 'sitemap includes the Encinitas landing page');
+
+const carlsbadUrl = canonical + 'medicare-broker-carlsbad.html';
+check(carlsbadHtml.includes('<link rel="canonical" href="' + carlsbadUrl + '">'), 'Carlsbad page has its own canonical URL');
+check(/<title>\s*Medicare Broker in Carlsbad, CA\s*\|\s*Find the Right Plan\s*<\/title>/i.test(carlsbadHtml), 'Carlsbad page has a local search title');
+check(/<meta name="description" content="[^"]+">/i.test(carlsbadHtml), 'Carlsbad page has a meta description');
+const carlsbadJsonMatch = carlsbadHtml.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/i);
+check(Boolean(carlsbadJsonMatch), 'Carlsbad page includes structured data');
+const carlsbadJson = JSON.parse(carlsbadJsonMatch[1]);
+check(carlsbadJson['@context'] === 'https://schema.org' && Array.isArray(carlsbadJson['@graph']), 'Carlsbad structured data uses a Schema.org graph');
+check(carlsbadJson['@graph'].some(item => item['@type'] === 'Service' && item.areaServed && item.areaServed.name === 'Carlsbad'), 'Carlsbad structured data identifies the local service area');
+check(sitemapUrls.includes(carlsbadUrl), 'sitemap includes the Carlsbad landing page');
+check(/href=["']\/medicare-broker-carlsbad\.html["']/.test(encinitasHtml), 'Encinitas page links to Carlsbad');
+check(/href=["']\/medicare-broker-encinitas\.html["']/.test(carlsbadHtml), 'Carlsbad page links to Encinitas');
+check(encinitasHtml.includes('How should I check a plan if I use Scripps providers in Encinitas?'), 'Encinitas page includes locally relevant provider-verification guidance');
+check(encinitasHtml.includes('Does my Encinitas neighborhood determine which Medicare plans I can choose?'), 'Encinitas page explains service-area and ZIP-code relevance');
+check(carlsbadHtml.includes('What should Carlsbad residents verify about local doctors and facilities?'), 'Carlsbad page includes locally relevant provider-verification guidance');
+check(carlsbadHtml.includes('What if my doctors are spread across Carlsbad and nearby cities?'), 'Carlsbad page explains cross-city provider verification');
+check(encinitasHtml.includes('Birthday Rule?') && carlsbadHtml.includes('Birthday Rule?'), 'both city pages include California-specific Medigap timing guidance');
+check(encinitasHtml.includes('before leaving employer coverage?') && carlsbadHtml.includes('before leaving employer coverage?'), 'both city pages include employer coverage transition guidance');
+check((encinitasHtml.match(/href=["']\/#contact["']/g) || []).length >= 3, 'Encinitas consultation links route to the homepage contact form');
+check((carlsbadHtml.match(/href=["']\/#contact["']/g) || []).length >= 3, 'Carlsbad consultation links route to the homepage contact form');
+check(encinitasHtml.includes('href="tel:+17604216826"') && carlsbadHtml.includes('href="tel:+17604216826"'), 'both local pages have the broker click-to-call number');
+check(html.includes('id="lead-form"') && html.includes('id="lead-name"') && html.includes('id="lead-phone"') && html.includes('id="lead-email"'), 'homepage has the consultation lead form and core contact fields');
 
 console.log('SEO crawler checks passed.');

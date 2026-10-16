@@ -2,7 +2,7 @@ name: Medicare site checks for Cloudflare Pages
 
 on:
   push:
-    branches: [main]
+    branches: [main, seo/encinitas-local-landing-page]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -30,7 +30,7 @@ jobs:
         run: npm run test:seo
       - name: Verify deployed preview crawler resources
         env:
-          SEO_PREVIEW_URL: https://seo-crawler-structured-data.medicare-6pj.pages.dev
+          SEO_PREVIEW_URL: https://seo-encinitas-local-landing.medicare-6pj.pages.dev
         run: npm run test:seo:live
 
   browser-regression:
