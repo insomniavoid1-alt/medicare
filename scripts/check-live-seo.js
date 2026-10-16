@@ -59,9 +59,9 @@ async function verify() {
 
   const carlsbadUrl = canonical + 'medicare-broker-carlsbad.html';
   assert.ok(urls.includes(carlsbadUrl), 'live sitemap contains the Carlsbad landing page');
-  assert.match(carlsbadHtml, /<link rel=["']canonical["'] href=["']https:\\/\\/findtherightplan\\.com\\/medicare-broker-carlsbad\\.html["']/i, 'live Carlsbad page has its own canonical URL');
-  assert.match(carlsbadHtml, /<title>\\s*Medicare Broker in Carlsbad, CA\\s*\\|\\s*Find the Right Plan\\s*<\\/title>/i, 'live Carlsbad page has a local title');
-  const carlsbadBlocks = [...carlsbadHtml.matchAll(/<script\\b[^>]*type=["']application\\/ld\\+json["'][^>]*>([\\s\\S]*?)<\\/script>/gi)];
+  assert.match(carlsbadHtml, /<link rel=["']canonical["'] href=["']https:\/\/findtherightplan\.com\/medicare-broker-carlsbad\.html["']/i, 'live Carlsbad page has its own canonical URL');
+  assert.match(carlsbadHtml, /<title>\s*Medicare Broker in Carlsbad, CA\s*\|\s*Find the Right Plan\s*<\/title>/i, 'live Carlsbad page has a local title');
+  const carlsbadBlocks = [...carlsbadHtml.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)];
   assert.equal(carlsbadBlocks.length, 1, 'live Carlsbad page exposes one JSON-LD block');
   const carlsbadData = JSON.parse(carlsbadBlocks[0][1]);
   assert.ok(carlsbadData['@graph']?.some(item => item['@type'] === 'Service' && item.areaServed?.name === 'Carlsbad'), 'live Carlsbad structured data identifies its service area');
