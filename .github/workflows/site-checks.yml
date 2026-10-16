@@ -15,8 +15,26 @@ permissions:
   contents: read
 
 jobs:
-  playwright:
-    name: Playwright regression tests
+  crawler-validation:
+    name: SEO crawler validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate crawler metadata and sitemap
+        run: npm run test:seo
+      - name: Verify deployed preview crawler resources
+        env:
+          SEO_PREVIEW_URL: https://seo-crawler-structured-data.medicare-6pj.pages.dev
+        run: npm run test:seo:live
+
+  browser-regression:
+    name: Desktop and mobile browser regression tests
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
@@ -37,6 +55,35 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+
+  baseline-browser-regression:
+    name: Browser regression baseline on main
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Check out current main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install test dependencies
+        run: npm install --no-audit --no-fund
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run browser tests against main baseline
+        run: npm run test:e2e
+      - name: Upload baseline Playwright report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-main-baseline-report
           path: |
             playwright-report/
             test-results/

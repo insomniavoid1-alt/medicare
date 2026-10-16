@@ -1,0 +1,71 @@
+const assert = require('node:assert/strict');
+
+const baseUrl = (process.env.SEO_PREVIEW_URL || 'https://seo-crawler-structured-data.medicare-6pj.pages.dev').replace(/\/$/, '');
+const canonical = 'https://findtherightplan.com/';
+const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+async function get(path) {
+  const response = await fetch(baseUrl + path, {
+    headers: { 'user-agent': 'MedicareCrawlerValidation/1.0' },
+    signal: AbortSignal.timeout(10000)
+  });
+  assert.equal(response.status, 200, baseUrl + path + ' returns HTTP 200 (got ' + response.status + ')');
+  return response.text();
+}
+
+async function verify() {
+  const html = await get('/');
+  const robots = await get('/robots.txt');
+  const sitemap = await get('/sitemap.xml');
+
+  assert.match(html, /<link\b[^>]*rel=["']canonical["'][^>]*href=["']https:\/\/findtherightplan\.com\/["'][^>]*>/i,
+    'preview HTML exposes the production canonical URL');
+  assert.match(html, /<title>\s*[^<]+\s*<\/title>/i, 'preview HTML has a non-empty title');
+  assert.match(html, /<meta\b[^>]*name=["']description["'][^>]*content=["'][^"']+["'][^>]*>/i,
+    'preview HTML has a non-empty meta description');
+
+  const blocks = [...html.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)];
+  assert.equal(blocks.length, 1, 'preview HTML exposes exactly one JSON-LD block');
+  const data = JSON.parse(blocks[0][1]);
+  assert.equal(data['@context'], 'https://schema.org', 'live JSON-LD uses Schema.org');
+  assert.ok(Array.isArray(data['@graph']), 'live JSON-LD graph is present');
+  const website = data['@graph'].find(item => item['@type'] === 'WebSite');
+  const person = data['@graph'].find(item => item['@type'] === 'Person');
+  assert.ok(website && person, 'live JSON-LD contains WebSite and Person entities');
+  assert.equal(website.url, canonical, 'live WebSite entity uses the production canonical');
+  assert.equal(website.publisher?.['@id'], person['@id'], 'live publisher points to the declared Person entity');
+  assert.equal(person.name, 'Michael Dovsky', 'live Person entity identifies Michael Dovsky');
+  assert.equal(person.jobTitle, 'Independent Medicare Broker', 'live Person entity identifies the broker role');
+  assert.equal(person.areaServed?.name, 'California', 'live Person entity identifies California service area');
+
+  assert.match(robots, /User-agent:\s*\*/i, 'live robots.txt includes a wildcard crawler rule');
+  assert.match(robots, /User-agent:\s*\*[\s\S]*?Allow:\s*\//i, 'live robots.txt permits public paths');
+  assert.ok(robots.includes('Sitemap: ' + canonical + 'sitemap.xml'), 'live robots.txt declares the production sitemap');
+
+  assert.match(sitemap, /<urlset\b[^>]*xmlns=["']http:\/\/www\.sitemaps\.org\/schemas\/sitemap\/0\.9["'][^>]*>/i,
+    'live sitemap uses the standard sitemap namespace');
+  const urls = [...sitemap.matchAll(/<loc>\s*([^<]+)\s*<\/loc>/gi)].map(match => match[1].trim());
+  assert.ok(urls.includes(canonical), 'live sitemap contains the canonical homepage');
+  assert.ok(urls.every(url => url.startsWith(canonical)), 'live sitemap URLs use the production HTTPS domain');
+
+  console.log('PASS live preview returns HTTP 200 for homepage, robots.txt, and sitemap.xml');
+  console.log('PASS live HTML metadata and JSON-LD identify the canonical site and Michael Dovsky');
+  console.log('PASS live robots.txt and sitemap.xml are consistent with the production domain');
+}
+
+(async () => {
+  let lastError;
+  for (let attempt = 1; attempt <= 6; attempt++) {
+    try {
+      await verify();
+      return;
+    } catch (error) {
+      lastError = error;
+      console.error('Live SEO verification attempt ' + attempt + '/6 failed: ' + error.message);
+      if (attempt < 6) await wait(10000);
+    }
+  }
+  console.error('Live SEO verification failed after 6 attempts.');
+  console.error(lastError);
+  process.exitCode = 1;
+})();
